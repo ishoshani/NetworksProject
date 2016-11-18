@@ -20,6 +20,7 @@ public class ClientContainer{
       ){
         String userInput;
         out.writeObject(new ChatPacket("Start"));
+        System.out.println("echo: "+ ((ChatPacket)in.readObject()).packetMessage);
         while((userInput = stdin.readLine()) != null){
           out.writeObject(new ChatPacket("Command", userInput));
           System.out.println("echo: "+ ((ChatPacket)in.readObject()).packetMessage);
