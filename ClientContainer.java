@@ -19,10 +19,10 @@ public class ClientContainer{
       BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))
       ){
         String userInput;
-        out.writeObject("");
+        out.writeObject(new ChatPacket("Start"));
         while((userInput = stdin.readLine()) != null){
-          out.writeObject(userInput);
-          System.out.println("echo: "+ (String)in.readObject());
+          out.writeObject(new ChatPacket("Command", userInput));
+          System.out.println("echo: "+ ((ChatPacket)in.readObject()).packetMessage);
         }
       }catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);

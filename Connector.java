@@ -16,10 +16,10 @@ public class Connector extends Thread{
         ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
         ){
-          String inputLine, outputLine;
-          while ((inputLine = (String)in.readObject()) != null) {
-            outputLine=process(inputLine);
-            out.writeObject(outputLine);
+          ChatPacket inputPacket, outputPacket;
+          while ((inputPacket = ((ChatPacket)in.readObject())) != null) {
+            outputPacket=process(inputPacket);
+            out.writeObject(outputPacket);
             }
         }catch(IOException e){
           System.err.println(e);
@@ -28,16 +28,25 @@ public class Connector extends Thread{
         }
     }
 
-  public String process(String input){
-    if(input.matches("username (.*)")){
-      username=input.split(" ")[1];
-      return "username changed";
-    }if(input.equals("hello")){
-      return "hello "+username;
+  public ChatPacket process(ChatPacket input){
+    ChatPacket c;
+    if(input.packetType.equals("Start")){
+      c = new ChatPacket("Message", "Welcome to IRC!");
+      return c;
     }
-    else{
-      return "sorry, didn't get that "+input;
+    if(input.packetType.equals("Command")){
+      String command = input.packetMessage;
+      if(command.matches("username (.*)")){
+        username=command.split(" ")[1];
+        c = new ChatPacket("Message", "Username is now "+username);
+        return c;
+      }if(command.equals("hello")){
+        c = new ChatPacket("Message", "hello"+username);
+        return c;
+      }
     }
+      c = new ChatPacket("Message", "sorry didnt get that");
+      return c;
   }
 
 }
