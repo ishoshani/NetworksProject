@@ -21,11 +21,11 @@ public class ClientContainer{
         String userInput;
         out.writeObject(new ChatPacket("Start"));
         out.flush();
-        ChatPacket welcome = (ChatPacket)in.readObject;
+        ChatPacket welcome = (ChatPacket)in.readObject();
         System.out.println(welcome);
         while((userInput = stdin.readLine()) != null){
           out.writeObject(new ChatPacket("Command", userInput));
-          ChatPacket message= (ChatPacket)in.readObject;
+          ChatPacket message= (ChatPacket)in.readObject();
           System.out.println(message);
         }
       }catch (UnknownHostException e) {
