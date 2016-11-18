@@ -3,10 +3,11 @@ java.io.*
 
 public class ServerContainer{
   public static void main(String[] args) throws IOException{
-    if (args.length!=1)
+    if (args.length!=1){
             System.err.println("Usage: java ServerContainer <port number>");
             System.exit(1);
-        }
+          }
+
     int portNumber = Integer.parseInt(args[0]);
     try(
       ServerSocket serverSocket = new ServerSocket(portNumber);
@@ -23,6 +24,5 @@ public class ServerContainer{
                 + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         }
+      }
   }
-
-}
