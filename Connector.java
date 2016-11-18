@@ -13,24 +13,26 @@ public class Connector extends Thread{
 
   public void run(){
     try(
-        PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(client.getInputStream());
         ){
           String inputLine, outputLine;
-          out.println("Welcome to IRC! send a command");
-          while ((inputLine = in.readLine()) != null) {
+          out.writeObject("Welcome to IRC! send a command");
+          while ((inputLine = (String)in.readObject()) != null) {
             outputLine=process(inputLine);
-            out.println(outputLine);
+            out.writeObject(outputLine);
             }
         }catch(IOException e){
+          System.err.println(e);
+        }catch(ClassNotFoundException e){
           System.err.println(e);
         }
     }
 
   public String process(String input){
-    if(input.matches("username +(.*)")){
+    if(input.matches("username (.*)")){
       username=input.split(" ")[1];
-      return "hello "+username;
+      return "username changed";
     }if(input.equals("hello")){
       return "hello "+username;
     }

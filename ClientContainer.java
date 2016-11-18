@@ -14,14 +14,15 @@ public class ClientContainer{
     int portNumber = Integer.parseInt(args[1]);
     try(
       Socket echoSocket = new Socket(hostName,portNumber);
-      PrintWriter out = new PrintWriter(echoSocket.getOutputStream(), true);
-      BufferedReader in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
-      BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+      ObjectOutputStream out = new ObjectOutputStream(echoSocket.getOutputStream());
+      ObjectInputStream in = new ObjectInputStream(echoSocket.getInputStream());
+      BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))
       ){
         String userInput;
+        out.writeObject("");
         while((userInput = stdin.readLine()) != null){
-          out.println(userInput);
-          System.out.println("echo: "+ in.readLine());
+          out.writeObject(userInput);
+          System.out.println("echo: "+ (String)in.readObject());
         }
       }catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
@@ -31,6 +32,11 @@ public class ClientContainer{
             System.err.println("Couldn't get I/O for the connection to " +
                 hostName);
             System.exit(1);
+      }
+      catch (ClassNotFoundException e){
+          System.err.println("Unexpected type of Object" + e);
+          System.exit(1);
+
       }
     }
   }
