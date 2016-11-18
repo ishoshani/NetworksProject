@@ -7,8 +7,10 @@ public class ServerContainer{
             System.err.println("Usage: java ServerContainer <port number>");
             System.exit(1);
           }
-
     int portNumber = Integer.parseInt(args[0]);
+    startServer(portNumber);
+  }
+  public static void startServer(int portNumber){
     try(
       ServerSocket serverSocket = new ServerSocket(portNumber);
       Socket clientSocket = serverSocket.accept();

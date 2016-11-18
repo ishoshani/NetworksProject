@@ -10,8 +10,8 @@ public class ClientContainer{
       );
       System.exit(1);
     }
-    String hostName = arg[0];
-    int portNumber = Integer.parseInt(arg[1]);
+    String hostName = args[0];
+    int portNumber = Integer.parseInt(args[1]);
     try(
       Socket echoSocket = new Socket(hostName,portNumber);
       PrintWriter out = new PrintWriter(echoSocket.getOutputStream(), true);
@@ -19,9 +19,9 @@ public class ClientContainer{
       BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
       ){
         String userInput;
-        while((userInput = stdin.readline()) != null){
+        while((userInput = stdin.readLine()) != null){
           out.println(userInput);
-          System.out.println("echo: "+ in.readline());
+          System.out.println("echo: "+ in.readLine());
         }
       }catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
@@ -34,4 +34,3 @@ public class ClientContainer{
       }
     }
   }
-}
