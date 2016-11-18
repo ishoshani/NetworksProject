@@ -21,10 +21,12 @@ public class ClientContainer{
         String userInput;
         out.writeObject(new ChatPacket("Start"));
         out.flush();
-        System.out.println(((ChatPacket)in.readObject()).packetType+ ": "+ ((ChatPacket)in.readObject()).packetMessage);
+        ChatPacket welcome = (ChatPacket)in.readObject;
+        System.out.println(welcome);
         while((userInput = stdin.readLine()) != null){
           out.writeObject(new ChatPacket("Command", userInput));
-          System.out.println(((ChatPacket)in.readObject()).packetType+": "+ ((ChatPacket)in.readObject()).packetMessage);
+          ChatPacket message= (ChatPacket)in.readObject;
+          System.out.println(message);
         }
       }catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);

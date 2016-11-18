@@ -12,4 +12,7 @@ public class ChatPacket implements Serializable{
     packetType=type;
     packetMessage=null;
   }
+  public String toString(){
+    return packetType+": "+packetMessage;
+  }
 }
