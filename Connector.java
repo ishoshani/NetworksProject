@@ -28,7 +28,7 @@ public class Connector extends Thread{
     if(input == "hello"){
       return "hello";
     }else{
-      return "sorry, didn't get that";
+      return "sorry, didn't get that "+input;
     }
   }
 
