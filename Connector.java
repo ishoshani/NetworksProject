@@ -17,7 +17,6 @@ public class Connector extends Thread{
         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
         ){
           String inputLine, outputLine;
-          out.writeObject("Welcome to IRC! send a command");
           while ((inputLine = (String)in.readObject()) != null) {
             outputLine=process(inputLine);
             out.writeObject(outputLine);
