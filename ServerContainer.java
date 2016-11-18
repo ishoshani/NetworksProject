@@ -1,5 +1,5 @@
-java.import.*;
-java.io.*;
+import java.net.*;
+import java.io.*;
 
 public class ServerContainer{
   public static void main(String[] args) throws IOException{
@@ -11,12 +11,12 @@ public class ServerContainer{
     int portNumber = Integer.parseInt(args[0]);
     try(
       ServerSocket serverSocket = new ServerSocket(portNumber);
-      Socket clientSocket = new serverSocket.accept();
+      Socket clientSocket = serverSocket.accept();
       PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
       ){
         String inputLine;
-        while((inputLine = in.readline()) != null){
+        while((inputLine = in.readLine()) != null){
           out.println(inputLine);
         }
       }catch (IOException e) {
