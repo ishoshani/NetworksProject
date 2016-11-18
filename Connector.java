@@ -25,8 +25,8 @@ public class Connector extends Thread{
     }
 
   public String process(String input){
-    if(input == "hello"){
-      return "hello";
+    if(input.equals("hello")){
+      return "hello you got it";
     }else{
       return "sorry, didn't get that "+input;
     }
