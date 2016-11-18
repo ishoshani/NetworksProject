@@ -3,9 +3,11 @@ import java.net.*;
 
 public class Connector extends Thread{
   Socket client;
+  String username;
 
   public Connector(Socket socket){
     super("Connection"+socket);
+    username = socket.toString();
     client = socket;
   }
 
@@ -15,6 +17,7 @@ public class Connector extends Thread{
         BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         ){
           String inputLine, outputLine;
+          out.println("Welcome to IRC! send a command");
           while ((inputLine = in.readLine()) != null) {
             outputLine=process(inputLine);
             out.println(outputLine);
@@ -25,9 +28,13 @@ public class Connector extends Thread{
     }
 
   public String process(String input){
-    if(input.equals("hello")){
-      return "hello you got it";
-    }else{
+    if(input.matches("username +(.*)")){
+      username=input.split(" ")[1];
+      return "hello "+username;
+    }if(input.equals("hello")){
+      return "hello "+username;
+    }
+    else{
       return "sorry, didn't get that "+input;
     }
   }
