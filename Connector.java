@@ -21,7 +21,6 @@ public class Connector extends Thread{
         ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
         ){
-          commandProtocol= new CommandProtocol(server,username);
           ChatPacket inputPacket, outputPacket;
           while ((inputPacket = ((ChatPacket)in.readObject())) != null) {
             outputPacket=process(inputPacket);
@@ -35,6 +34,7 @@ public class Connector extends Thread{
     }
 
   public ChatPacket process(ChatPacket input){
+    commandProtocol= new CommandProtocol(server,username);
     ChatPacket c;
     if(input.packetType.equals("Start")){
       c = new ChatPacket("Message", "Welcome to IRC!");
@@ -42,7 +42,7 @@ public class Connector extends Thread{
     }
     if(input.packetType.equals("Command")){
       String command = input.packetMessage;
-
+      return commandProtocol.process(command);
     }
       c = new ChatPacket("Message", "sorry didnt get that");
       return c;
