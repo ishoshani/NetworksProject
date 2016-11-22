@@ -1,12 +1,17 @@
 import java.io.*;
+import java.net.*;
+import java.util.Hashtable;
 
 public class Connector extends Thread{
   Socket client;
   String username;
-
-  public Connector(Socket socket){
+  ServerState server;
+  Hashtable roomList;
+  public Connector(Socket socket, Integer userNumber, Hashtable roomList, ServerState server){
     super("Connection"+socket);
-    username = "newUser";
+    username = "newUser"+userNumber;
+    this.server = server;
+    this.roomList=roomList;
     client = socket;
   }
 
@@ -41,6 +46,11 @@ public class Connector extends Thread{
         return c;
       }if(command.equals("hello")){
         c = new ChatPacket("Message", "hello "+username);
+        return c;
+      }if(command.matches("status")){
+        synchronized(server){
+          c = new ChatPacket("Message", "there are currently"+server.currentUsers);
+        }
         return c;
       }
     }

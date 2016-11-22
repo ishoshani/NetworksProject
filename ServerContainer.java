@@ -1,7 +1,9 @@
 import java.net.*;
 import java.io.*;
+import java.util.Hashtable;
 
 public class ServerContainer{
+
   public static void main(String[] args) throws IOException{
     if (args.length!=1){
             System.err.println("Usage: java ServerContainer <port number>");
@@ -12,12 +14,18 @@ public class ServerContainer{
   }
 
   public static void startServer(int portNumber){
+    int userNumber=0;
+    ServerState servState = new ServerState();
+    Hashtable roomList = new Hashtable<String,Room>();
     boolean listening = true;
     try(
       ServerSocket serverSocket = new ServerSocket(portNumber);
         ){
           while(listening){
-            new Connector(serverSocket.accept()).start();
+            Socket newClient=serverSocket.accept();
+            userNumber++;
+            servState.currentUsers++;
+            new Connector(newClient,userNumber,roomList,servState).start();
 
           }
         }catch (IOException e) {
