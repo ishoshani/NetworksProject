@@ -7,6 +7,7 @@ public class Connector extends Thread{
   String username;
   ServerState server;
   Hashtable roomList;
+  CommandProtocol commandProtocol;
   public Connector(Socket socket, Integer userNumber, Hashtable roomList, ServerState server){
     super("Connection"+socket);
     username = "newUser"+userNumber;
@@ -20,6 +21,7 @@ public class Connector extends Thread{
         ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(client.getInputStream());
         ){
+          commandProtocol= new CommandProtocol(server,username);
           ChatPacket inputPacket, outputPacket;
           while ((inputPacket = ((ChatPacket)in.readObject())) != null) {
             outputPacket=process(inputPacket);
@@ -40,19 +42,7 @@ public class Connector extends Thread{
     }
     if(input.packetType.equals("Command")){
       String command = input.packetMessage;
-      if(command.matches("username (.*)")){
-        username=command.split(" ")[1];
-        c = new ChatPacket("Message", "Username is now "+username);
-        return c;
-      }if(command.equals("hello")){
-        c = new ChatPacket("Message", "hello "+username);
-        return c;
-      }if(command.matches("status")){
-        synchronized(server){
-          c = new ChatPacket("Message", "there are currently"+server.currentUsers);
-        }
-        return c;
-      }
+
     }
       c = new ChatPacket("Message", "sorry didnt get that");
       return c;
