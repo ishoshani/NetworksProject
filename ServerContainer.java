@@ -3,6 +3,9 @@ import java.io.*;
 import java.util.Hashtable;
 
 public class ServerContainer{
+  public static ServerState servState = new ServerState();
+  public static Hashtable roomList = new Hashtable<String,Room>();
+
 
   public static void main(String[] args) throws IOException{
     if (args.length!=1){
@@ -14,10 +17,8 @@ public class ServerContainer{
   }
 
   public static void startServer(int portNumber){
-    int static userNumber=0;
-    ServerState static servState = new ServerState();
-    Hashtable static roomList = new Hashtable<String,Room>();
-    boolean listening = true;
+      int userNumber=0;
+      boolean listening = true;
     try(
       ServerSocket serverSocket = new ServerSocket(portNumber);
         ){
