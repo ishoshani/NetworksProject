@@ -1,5 +1,4 @@
 import java.io.*;
-import java.net.*;
 
 public class Connector extends Thread{
   Socket client;
@@ -7,7 +6,7 @@ public class Connector extends Thread{
 
   public Connector(Socket socket){
     super("Connection"+socket);
-    username = socket.toString();
+    username = "newUser";
     client = socket;
   }
 
@@ -41,7 +40,7 @@ public class Connector extends Thread{
         c = new ChatPacket("Message", "Username is now "+username);
         return c;
       }if(command.equals("hello")){
-        c = new ChatPacket("Message", "hello"+username);
+        c = new ChatPacket("Message", "hello "+username);
         return c;
       }
     }
