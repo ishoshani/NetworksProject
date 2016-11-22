@@ -5,14 +5,9 @@ import java.util.Hashtable;
 public class Connector extends Thread{
   Socket client;
   String username;
-  ServerState server;
-  Hashtable roomList;
-  CommandProtocol commandProtocol;
-  public Connector(Socket socket, Integer userNumber, Hashtable roomList, ServerState server){
+  public Connector(Socket socket, Integer userNumber){
     super("Connection"+socket);
     username = "newUser"+userNumber;
-    this.server = server;
-    this.roomList=roomList;
     client = socket;
   }
 
@@ -34,7 +29,6 @@ public class Connector extends Thread{
     }
 
   public ChatPacket process(ChatPacket input){
-    commandProtocol= new CommandProtocol(server,username);
     ChatPacket c;
     if(input.packetType.equals("Start")){
       c = new ChatPacket("Message", "Welcome to IRC!");
@@ -42,7 +36,19 @@ public class Connector extends Thread{
     }
     if(input.packetType.equals("Command")){
       String command = input.packetMessage;
-      return commandProtocol.process(command);
+      if(command.matches("username (.*)")){
+        username=command.split(" ")[1];
+        c = new ChatPacket("Message", "Username is now "+username);
+        return c;
+      }if(command.equals("hello")){
+        c = new ChatPacket("Message", "hello "+username);
+        return c;
+      }if(command.matches("status")){
+        synchronized(ServerContainer.servState){
+          c = new ChatPacket("Message", "there are currently "+ServerContainer.servState.currentUsers+" users");
+        }
+        return c;
+      }
     }
       c = new ChatPacket("Message", "sorry didnt get that");
       return c;

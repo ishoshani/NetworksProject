@@ -14,9 +14,9 @@ public class ServerContainer{
   }
 
   public static void startServer(int portNumber){
-    int userNumber=0;
-    ServerState servState = new ServerState();
-    Hashtable roomList = new Hashtable<String,Room>();
+    int static userNumber=0;
+    ServerState static servState = new ServerState();
+    Hashtable static roomList = new Hashtable<String,Room>();
     boolean listening = true;
     try(
       ServerSocket serverSocket = new ServerSocket(portNumber);
@@ -25,7 +25,7 @@ public class ServerContainer{
             Socket newClient=serverSocket.accept();
             userNumber++;
             servState.currentUsers++;
-            new Connector(newClient,userNumber,roomList,servState).start();
+            new Connector(newClient,userNumber).start();
 
           }
         }catch (IOException e) {
