@@ -36,7 +36,7 @@ public class ClientContainer{
             out.writeObject(new ChatPacket(state, "isAlive"));
             ChatPacket message= (ChatPacket)in.readObject();
             ClientProtocol.processProcedure(message);
-            System.out.println(message);
+            out.flush();
           }
         }
       }
