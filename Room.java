@@ -17,12 +17,12 @@ public class Room{
     players = new String[2];
     playerID = new Integer[2];
     connections = new Connector[2];
-    game = new Game();
+    game = new Game(this);
     nextMessage = null;
     state = WAITING;
   }
   public String welcomeMessage(){
-    String s = game.welcomeMessage(players);
+    String s = game.welcomeMessage();
     return s;
   }
   public String SendCommand(Integer id, String Message){
@@ -32,8 +32,10 @@ public class Room{
       }
       ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
         nextMessage = out;
-      turn = playerID[1];
-      return "done";
+        if(state != DONE){
+        turn = playerID[1];
+        }
+      return "";
     }
     if(turn == playerID[1]){
       if(id != playerID[1]){
@@ -41,12 +43,17 @@ public class Room{
       }
       ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
         nextMessage = out;
-
-      turn = playerID[1];
-      return "done";
+      if(state != DONE){
+      turn = playerID[0];
+      }
+      return "";
     }
     return "wut";
 
+  }
+  public String finish(){
+    String s = game.finish();
+    return s;
   }
   public boolean AddPlayer(String username, Integer id, Connector connector){
     if(playerID[0]==null){
@@ -77,7 +84,6 @@ public class Room{
       }
     return n;
   }
-
 
 
 

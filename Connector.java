@@ -27,7 +27,7 @@ public class Connector extends Thread{
         out.writeObject(outputPacket);
       }
     }catch(IOException e){
-      System.err.println(e);
+      System.err.println("in Connector" + e);
     }catch(ClassNotFoundException e){
       System.err.println(e);
     }
@@ -62,6 +62,14 @@ public class Connector extends Thread{
       return c;
     }
     if(input.packetType.equals("WaitingForTurn")){
+      if(CurrentGame.state==Room.DONE){
+        synchronized(ServerContainer.roomList){
+          if(ServerContainer.roomList.containsKey(CurrentGameID)){
+          ServerContainer.roomList.remove(CurrentGameID);
+        }
+        }
+        return new ChatPacket("FinishGame",CurrentGame.finish());
+      }
        return CurrentGame.getNextMessage();
     }
     if(input.packetType.equals("Playing")){
