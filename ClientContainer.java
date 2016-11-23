@@ -4,6 +4,7 @@ import java.net.*;
 
 public class ClientContainer{
   static String state = "Menu";
+  static Integer gameID = 0;
   public static void main(String[] args) {
     if(args.length != 2){
       System.err.println(
@@ -25,20 +26,25 @@ public class ClientContainer{
         ChatPacket welcome = (ChatPacket)in.readObject();
         System.out.println(welcome);
         while(!state.equals("Exit")){
-          System.out.println("beginning loop with state "+state);
-          if(state.equals("Menu")){
+          while(state.equals("Menu")){
             if((userInput = stdin.readLine()) != null){
             out.writeObject(new ChatPacket(state, userInput));
             ChatPacket message= (ChatPacket)in.readObject();
             ClientProtocol.processProcedure(message);
           }
-          if(state.equals("Waiting")){
-            Thread.sleep(1000);
+        }
+          while(state.equals("Waiting")){
+            System.out.println("got into Waiting Section");
             out.writeObject(new ChatPacket(state, "isAlive"));
             out.flush();
             ChatPacket message= (ChatPacket)in.readObject();
             ClientProtocol.processProcedure(message);
-
+          }
+          while(state.equals("Playing")){
+            if((userInput = stdin.readLine()) != null){
+            out.writeObject(new ChatPacket(state, userInput, gameID));
+            ChatPacket message= (ChatPacket)in.readObject();
+            ClientProtocol.processProcedure(message);
           }
         }
       }
@@ -56,9 +62,6 @@ public class ClientContainer{
           System.exit(1);
 
       }
-      catch(InterruptedException e){
-        System.err.println("Sleep interrupted" + e);
-        System.exit(1);
-      }
+
     }
   }

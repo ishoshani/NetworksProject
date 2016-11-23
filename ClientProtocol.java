@@ -12,8 +12,20 @@ public class ClientProtocol{
       ClientContainer.state="Waiting";
       return;
     }
+    if(input.packetType.equals("LobbyBegin")){
+      System.out.println("got Into game");
+      ClientContainer.gameID=Integer.parseInt(input.packetMessage);
+      ClientContainer.state="Play";
+    }
     if(input.packetType.equals("StillAlive")){
       System.out.println("StillWaiting");
+      try{
+        Thread.sleep(3000);
+      }catch(InterruptedException e){
+        System.err.println("Sleep interrupted" + e);
+        System.exit(1);
+      }
+      ClientContainer.state="Waiting";
       return;
     }
     System.out.println("cound not process packet "+ input);
