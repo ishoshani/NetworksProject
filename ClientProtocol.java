@@ -15,11 +15,17 @@ public class ClientProtocol{
     if(input.packetType.equals("LobbyBegin")){
       System.out.println("got Into game");
       ClientContainer.gameID=Integer.parseInt(input.packetMessage);
-      ClientContainer.state="Play";
+      ClientContainer.state="BeginPlay";
       return;
     }
-    if(input.packetType.equals("Play")){
+    if(input.packetType.equals("yourTurn")){
       System.out.println(input.packetMessage);
+      ClientContainer.state="Playing";
+      return;
+    }
+    if(input.packetType.equals("otherTurn")){
+      System.out.println(input.packetMessage);
+      ClientContainer.state="WaitingForTurn";
       return;
     }
     if(input.packetType.equals("StillAlive")){

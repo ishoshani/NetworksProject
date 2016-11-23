@@ -49,13 +49,14 @@ public class Connector extends Thread{
       }
     }
 
-    if(input.packetType.equals("Playing")){
-      String output = CurrentGame.SendCommand( uID, input.packetMessage);
-      String type = "";
-      if(CurrentGame.state==Room.PLAYING){
-        type = "Play";
-      }if(CurrentGame.state==Room.DONE){
-        type = "Finish";
+    if(input.packetType.equals("BeginPlay")){
+      String output = CurrentGame.welcomeMessage();
+      String type;
+      if(CurrentGame.turn == uID){
+        type = "yourTurn";
+      }
+      else{
+        type = "otherTurn";
       }
       c = new ChatPacket(type, output, input.gameID);
       return c;

@@ -25,24 +25,25 @@ public class Room{
     return s;
   }
   public String SendCommand(Integer id, String Message){
-    if(turn == 0){
+    if(turn == playerID[0]){
       if(id != playerID[0]){
         return "please wait your turn";
       }
       ChatPacket out = new ChatPacket("Play", Message);
       connections[1].SendtoClient(out);
-      turn = 1;
-      return "";
+      turn = playerID[1];
+      return "done";
     }
-    else{
+    if(turn == playerID[1]){
       if(id != playerID[1]){
         return "please wait your turn";
       }
       ChatPacket out = new ChatPacket("Play", Message);
       connections[0].SendtoClient(out);
-      turn = 0;
-      return "";
+      turn = playerID[0];
+      return "done";
     }
+    return "wut";
 
   }
   public boolean AddPlayer(String username, Integer id, Connector connector){
@@ -57,6 +58,7 @@ public class Room{
       playerID[1] = id;
       connections[1] = connector;
       state = PLAYING;
+      turn = playerID[0];
       return true;
     }
     System.err.println("someone tried to connect to a full lobby");
