@@ -25,6 +25,7 @@ public class ClientContainer{
         ChatPacket welcome = (ChatPacket)in.readObject();
         System.out.println(welcome);
         while(!state.equals("Exit")){
+          System.out.println("beginning loop with state "+state);
           if(state.equals("Menu")){
             if((userInput = stdin.readLine()) != null){
             out.writeObject(new ChatPacket(state, userInput));
