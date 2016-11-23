@@ -40,6 +40,7 @@ public class Connector extends Thread{
       return c;
     }
     if(input.packetType.equals("Waiting")){
+      System.out.println("got keep alive message");
       if (CurrentGame.state==Room.PLAYING){
         c = new ChatPacket("LobbyBegin", uID.toString());
         return c;

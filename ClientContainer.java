@@ -32,7 +32,7 @@ public class ClientContainer{
             ClientProtocol.processProcedure(message);
           }
           if(state.equals("Waiting")){
-            Thread.sleep(5000);
+            Thread.sleep(1000);
             out.writeObject(new ChatPacket(state, "isAlive"));
             out.flush();
             ChatPacket message= (ChatPacket)in.readObject();
