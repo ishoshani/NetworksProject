@@ -12,6 +12,10 @@ public class ClientProtocol{
       ClientContainer.state="Waiting";
       return;
     }
+    if(input.packetType.equals("StillAlive")){
+      System.out.println("StillWaiting");
+      return;
+    }
     System.out.println("cound not process packet "+ input);
     return;
   }

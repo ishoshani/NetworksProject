@@ -39,6 +39,14 @@ public class Connector extends Thread{
       c = new ChatPacket("Message", "Welcome to IRC!");
       return c;
     }
+    if(input.packetType.equals("Waiting")){
+      if (CurrentGame.state==Room.PLAYING){
+        c = new ChatPacket("LobbyBegin", uID.toString());
+        return c;
+      }else{
+        return new ChatPacket("StillAlive","");
+      }
+    }
     if(input.packetType.equals("Menu")){
       String command = input.packetMessage;
       if(command.matches("username (.*)")){
