@@ -36,7 +36,9 @@ public class ClientProtocol{
     }
     if(input.packetType.equals("FinishGame")){
       ClientContainer.state="Menu";
+      System.out.println(input.packetMessage);
       System.out.println("Game was finished. Returning to Menu");
+      return;
     }
     if(input.packetType.equals("StillAlive")){
       System.out.println("StillWaiting");
