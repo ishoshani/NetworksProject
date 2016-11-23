@@ -3,6 +3,7 @@ import java.io.*;
 import java.net.*;
 
 public class ClientContainer{
+  static String state = "Menu";
   public static void main(String[] args) {
     if(args.length != 2){
       System.err.println(
@@ -23,11 +24,22 @@ public class ClientContainer{
         out.flush();
         ChatPacket welcome = (ChatPacket)in.readObject();
         System.out.println(welcome);
-        while((userInput = stdin.readLine()) != null){
-          out.writeObject(new ChatPacket("Command", userInput));
-          ChatPacket message= (ChatPacket)in.readObject();
-          System.out.println(message);
+        while(!state.equals("Exit")){
+          if(state.equals("Menu")){
+            if((userInput = stdin.readLine()) != null){
+            out.writeObject(new ChatPacket(state, userInput));
+            ChatPacket message= (ChatPacket)in.readObject();
+            ClientProtocol.processProcedure(message);
+          }
+          if(state.equals("Waiting")){
+            Thread.sleep(5000);
+            out.writeObject(new ChatPacket(state, "isAlive"));
+            ChatPacket message= (ChatPacket)in.readObject();
+            ClientProtocol.processProcedure(message);
+            System.out.println(message);
+          }
         }
+      }
       }catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
@@ -41,6 +53,10 @@ public class ClientContainer{
           System.err.println("Unexpected type of Object" + e);
           System.exit(1);
 
+      }
+      catch(InterruptedException e){
+        System.err.println("Sleep interrupted" + e);
+        System.exit(1);
       }
     }
   }

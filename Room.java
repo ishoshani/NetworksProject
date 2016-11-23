@@ -1,41 +1,35 @@
 import java.net.*;
 import java.io.*;
 
-public class Room extends Thread{
-  int portNumber;
-  ServerSocket mySocket;
-  int numClients;
-  Socket[] clients;
-  PrintWriter[] outs;
-  BufferedReader[] ins;
+public class Room{
+  String[] players;
+  String nextMessage;
+  Integer state;
+  final static int WAITING = 0;
+  final static int PLAYING = 1;
+  final static int DONE = 2;
 
-  public Room(int portNumber){
-    super("Room"+portNumber);
-    int numClients=0;
-    this.portNumber=portNumber;
-    clients = new Socket[10];
-    outs = new PrintWriter[10];
-    ins = new BufferedReader[10];
+  public Room(){
+    players = new String[2];
+    nextMessage = null;
+    state = WAITING;
   }
-  public void addClient(Socket socket) throws IOException{
-    try{
-    clients[numClients]=socket;
-    outs[numClients]=new PrintWriter(clients[numClients].getOutputStream(), true);
-    ins[numClients]=new BufferedReader(new InputStreamReader(clients[numClients].getInputStream()));
-  }catch(IOException e){
-    System.err.println("error adding client"+ e);
-  }
-    numClients++;
-  }
-  public void run(){
-    String inputLine, outputLine;
-    try{
-      while((inputLine =ins[numClients].readLine()) != null){
-        System.out.println("inputLine");
-      }
-    }catch(IOException e){
-      System.err.println("error reading inputLine"+ e);
+  public boolean AddPlayer(String username){
+    if(players[0]==null){
+      players[0] = username;
+      return true;
     }
+    if(players[1]==null){
+      players[1] = username;
+      state = PLAYING;
+      return true;
+    }
+    System.err.println("someone tried to connect to a full lobby");
+    return false;
   }
+
+
+
+
 
 }

@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 public class ServerContainer{
   public static ServerState servState = new ServerState();
-  public static Hashtable roomList = new Hashtable<String,Room>();
+  public static Hashtable<Integer,Room> roomList = new Hashtable<Integer,Room>();
 
 
   public static void main(String[] args) throws IOException{
