@@ -57,11 +57,13 @@ public class Connector extends Thread{
               newGame.AddPlayer(username);
               CurrentGame = newGame;;
               c = new ChatPacket("NoLobbies",uID.toString());
+              return c;
             }
             Room game = ServerContainer.roomList.get(gameKey);
             game.AddPlayer(username);
             CurrentGame = game;
             c = new ChatPacket("LobbyBegin", uID.toString());
+            return c;
           }
         }if(command.matches("status")){
         synchronized(ServerContainer.servState){
