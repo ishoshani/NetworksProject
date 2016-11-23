@@ -8,6 +8,7 @@ public class Room{
   ChatPacket nextMessage;
   Integer turn = 0;
   Integer state;
+  Game game;
   final static int WAITING = 0;
   final static int PLAYING = 1;
   final static int DONE = 2;
@@ -16,12 +17,12 @@ public class Room{
     players = new String[2];
     playerID = new Integer[2];
     connections = new Connector[2];
+    game = new Game();
     nextMessage = null;
     state = WAITING;
   }
   public String welcomeMessage(){
-    String s = "Hello to "+players[0]+" and "+players[1]+". Let us Begin. The rules are as follows:\n";
-    s+="This is simply a polite conversation. Take turns speaking, and wait until the other is complete. "+players[1]+" will go first.\n";
+    String s = game.welcomeMessage(players);
     return s;
   }
   public String SendCommand(Integer id, String Message){
@@ -29,7 +30,7 @@ public class Room{
       if(id != playerID[0]){
         return "please wait your turn";
       }
-      ChatPacket out = new ChatPacket("yourTurn", Message);
+      ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
         nextMessage = out;
       turn = playerID[1];
       return "done";
@@ -38,10 +39,10 @@ public class Room{
       if(id != playerID[1]){
         return "please wait your turn";
       }
-      ChatPacket out = new ChatPacket("yourTurn", Message);
+      ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
         nextMessage = out;
 
-      turn = playerID[0];
+      turn = playerID[1];
       return "done";
     }
     return "wut";
