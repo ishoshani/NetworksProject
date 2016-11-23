@@ -63,11 +63,11 @@ public class Connector extends Thread{
     }
     if(input.packetType.equals("WaitingForTurn")){
       if(CurrentGame.state==Room.DONE){
-        synchronized(ServerContainer.roomList){
-          if(ServerContainer.roomList.containsKey(CurrentGameID)){
-          ServerContainer.roomList.remove(CurrentGameID);
-        }
-        }
+        // synchronized(ServerContainer.roomList){
+        //   if(ServerContainer.roomList.containsKey(CurrentGameID)){
+        //   ServerContainer.roomList.remove(CurrentGameID);
+        // }
+        // }
         return new ChatPacket("FinishGame",CurrentGame.finish());
       }
        return CurrentGame.getNextMessage();
