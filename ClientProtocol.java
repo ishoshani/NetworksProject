@@ -16,6 +16,11 @@ public class ClientProtocol{
       System.out.println("got Into game");
       ClientContainer.gameID=Integer.parseInt(input.packetMessage);
       ClientContainer.state="Play";
+      return;
+    }
+    if(input.packetType.equals("Play")){
+      System.out.println(input.packetMessage);
+      return;
     }
     if(input.packetType.equals("StillAlive")){
       System.out.println("StillWaiting");

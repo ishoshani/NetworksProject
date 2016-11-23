@@ -39,8 +39,8 @@ public class Connector extends Thread{
       c = new ChatPacket("Message", "Welcome to IRC!");
       return c;
     }
+
     if(input.packetType.equals("Waiting")){
-      System.out.println("got keep alive message");
       if (CurrentGame.state==Room.PLAYING){
         c = new ChatPacket("LobbyBegin", uID.toString());
         return c;
@@ -48,6 +48,19 @@ public class Connector extends Thread{
         return new ChatPacket("StillAlive","");
       }
     }
+
+    if(input.packetType.equals("Playing")){
+      String output = CurrentGame.SendCommand( uID, input.packetMessage);
+      String type = "";
+      if(CurrentGame.state==Room.PLAYING){
+        type = "Play";
+      }if(CurrentGame.state==Room.DONE){
+        type = "Finish";
+      }
+      c = new ChatPacket(type, output, input.gameID);
+      return c;
+    }
+
     if(input.packetType.equals("Menu")){
       String command = input.packetMessage;
       if(command.matches("username (.*)")){
@@ -58,23 +71,23 @@ public class Connector extends Thread{
         c = new ChatPacket("Message", "hello "+username);
         return c;
       }if(command.equals("play")){
-          synchronized (ServerContainer.roomList){
-            Integer gameKey = findGame();
-            if(gameKey==null){
-              ServerContainer.roomList.put(uID,new Room());
-              Room newGame= ServerContainer.roomList.get(uID);
-              newGame.AddPlayer(username);
-              CurrentGame = newGame;;
-              c = new ChatPacket("NoLobbies",uID.toString());
-              return c;
-            }
-            Room game = ServerContainer.roomList.get(gameKey);
-            game.AddPlayer(username);
-            CurrentGame = game;
-            c = new ChatPacket("LobbyBegin", uID.toString());
+        synchronized (ServerContainer.roomList){
+          Integer gameKey = findGame();
+          if(gameKey==null){
+            ServerContainer.roomList.put(uID,new Room());
+            Room newGame= ServerContainer.roomList.get(uID);
+            newGame.AddPlayer(username, uID, this);
+            CurrentGame = newGame;;
+            c = new ChatPacket("NoLobbies",uID.toString());
             return c;
           }
-        }if(command.matches("status")){
+          Room game = ServerContainer.roomList.get(gameKey);
+          game.AddPlayer(username, uID, this);
+          CurrentGame = game;
+          c = new ChatPacket("LobbyBegin", uID.toString());
+          return c;
+        }
+      }if(command.matches("status")){
         synchronized(ServerContainer.servState){
           c = new ChatPacket("Message", "there are currently "+ServerContainer.servState.currentUsers+" users");
         }
@@ -91,6 +104,15 @@ public class Connector extends Thread{
       }
     }
     return null;
+  }
+  public void SendtoClient(ChatPacket outputPacket){
+    try(
+    ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+    ){
+      out.writeObject(outputPacket);
+    }catch(IOException e){
+      System.err.println(e);
+    }
   }
 
 }
