@@ -24,7 +24,6 @@ public class ClientProtocol{
       return;
     }
     if(input.packetType.equals("otherTurn")){
-      System.out.println(input.packetMessage);
       try{
         Thread.sleep(3000);
       }catch(InterruptedException e){

@@ -54,7 +54,6 @@ public class ClientContainer{
           }
         }
         while(state.equals("WaitingForTurn")){
-          System.out.println("WaitingForOtherPlayer");
           out.writeObject(new ChatPacket(state, "isAlive"));
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
