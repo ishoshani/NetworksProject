@@ -61,6 +61,13 @@ public class Connector extends Thread{
       c = new ChatPacket(type, output, input.gameID);
       return c;
     }
+    if(input.packetType.equals("WaitingForTurn")){
+       return CurrentGame.getNextMessage();
+    }
+    if(input.packetType.equals("Playing")){
+      return new ChatPacket("otherTurn", CurrentGame.SendCommand(uID, input.packetMessage), input.gameID);
+    }
+
 
     if(input.packetType.equals("Menu")){
       String command = input.packetMessage;
@@ -95,7 +102,7 @@ public class Connector extends Thread{
         return c;
       }
     }
-    c = new ChatPacket("Message", "sorry didnt get that");
+    c = new ChatPacket("Message", "sorry didnt get that" + input);
     return c;
   }
   public Integer findGame(){

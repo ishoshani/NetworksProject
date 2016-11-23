@@ -5,7 +5,7 @@ public class Room{
   String[] players;
   Integer[] playerID;
   Connector[] connections;
-  String nextMessage;
+  ChatPacket nextMessage;
   Integer turn = 0;
   Integer state;
   final static int WAITING = 0;
@@ -21,7 +21,7 @@ public class Room{
   }
   public String welcomeMessage(){
     String s = "Hello to "+players[0]+" and "+players[1]+". Let us Begin. The rules are as follows:\n";
-    s+="This is simply a polite conversation. Take turns speaking, and wait until the other is complete. "+players[0]+" will go first.\n";
+    s+="This is simply a polite conversation. Take turns speaking, and wait until the other is complete. "+players[1]+" will go first.\n";
     return s;
   }
   public String SendCommand(Integer id, String Message){
@@ -29,8 +29,10 @@ public class Room{
       if(id != playerID[0]){
         return "please wait your turn";
       }
-      ChatPacket out = new ChatPacket("Play", Message);
-      connections[1].SendtoClient(out);
+      ChatPacket out = new ChatPacket("yourTurn", Message);
+      synchronized(nextMessage){
+        nextMessage = out;
+      }
       turn = playerID[1];
       return "done";
     }
@@ -38,8 +40,10 @@ public class Room{
       if(id != playerID[1]){
         return "please wait your turn";
       }
-      ChatPacket out = new ChatPacket("Play", Message);
-      connections[0].SendtoClient(out);
+      ChatPacket out = new ChatPacket("yourTurn", Message);
+      synchronized(nextMessage){
+        nextMessage = out;
+      }
       turn = playerID[0];
       return "done";
     }
@@ -63,6 +67,19 @@ public class Room{
     }
     System.err.println("someone tried to connect to a full lobby");
     return false;
+  }
+
+  public ChatPacket getNextMessage(){
+    ChatPacket n;
+    synchronized(nextMessage){
+      n =  nextMessage;
+      if(n == null){
+        n = new ChatPacket("otherTurn");
+      }else{
+        nextMessage=null;
+      }
+    }
+    return n;
   }
 
 
