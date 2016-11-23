@@ -54,6 +54,10 @@ public class ClientContainer{
           }
         }
         while(state.equals("WaitingForTurn")){
+          if(stdin.ready()){
+            String trash = stdin.readLine();
+            System.out.println("wait your turn, threw away "+ trash);
+          }
           out.writeObject(new ChatPacket(state, "isAlive"));
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
