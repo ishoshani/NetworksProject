@@ -3,7 +3,7 @@ import java.net.*;
 
 public class ClientProtocol{
   public static void processProcedure(ChatPacket input){
-    if(input.packetType.equals("message")){
+    if(input.packetType.equals("Message")){
       System.out.println(input);
       return;
     }
