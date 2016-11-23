@@ -17,7 +17,7 @@ public class Game{
     return command;
   }
   public String finish(){
-    String s = "thank you both for playing. "+myRoom.players[myRoom.turn]+ " said goodbye";
+    String s = "thank you both for playing. "+myRoom.players[myRoom.turnSwitch]+ " said goodbye";
     return s;
   }
 }

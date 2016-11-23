@@ -6,6 +6,7 @@ public class Room{
   Integer[] playerID;
   Connector[] connections;
   ChatPacket nextMessage;
+  int turnSwitch =0;
   Integer turn = 0;
   Integer state;
   Game game;
@@ -33,7 +34,8 @@ public class Room{
       ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
         nextMessage = out;
         if(state != DONE){
-        turn = playerID[1];
+        turnSwitch = 1;
+        turn = playerID[turnSwitch];
         }
       return "";
     }
@@ -44,7 +46,8 @@ public class Room{
       ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
         nextMessage = out;
       if(state != DONE){
-      turn = playerID[0];
+        turnSwitch=0;
+      turn = playerID[turnSwitch];
       }
       return "";
     }
@@ -67,7 +70,8 @@ public class Room{
       playerID[1] = id;
       connections[1] = connector;
       state = PLAYING;
-      turn = playerID[0];
+      turnSwitch=0;
+      turn = playerID[turnSwitch];
       return true;
     }
     System.err.println("someone tried to connect to a full lobby");
