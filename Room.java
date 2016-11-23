@@ -30,9 +30,7 @@ public class Room{
         return "please wait your turn";
       }
       ChatPacket out = new ChatPacket("yourTurn", Message);
-      synchronized(nextMessage){
         nextMessage = out;
-      }
       turn = playerID[1];
       return "done";
     }
@@ -41,9 +39,8 @@ public class Room{
         return "please wait your turn";
       }
       ChatPacket out = new ChatPacket("yourTurn", Message);
-      synchronized(nextMessage){
         nextMessage = out;
-      }
+
       turn = playerID[0];
       return "done";
     }
@@ -71,14 +68,12 @@ public class Room{
 
   public ChatPacket getNextMessage(){
     ChatPacket n;
-    synchronized(nextMessage){
       n =  nextMessage;
       if(n == null){
         n = new ChatPacket("otherTurn");
       }else{
         nextMessage=null;
       }
-    }
     return n;
   }
 
