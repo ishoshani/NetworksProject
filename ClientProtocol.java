@@ -7,7 +7,7 @@ public class ClientProtocol{
       System.out.println(input);
       return;
     }
-    if(input.packetType.equals("NoLobby")){
+    if(input.packetType.equals("NoLobbies")){
       System.out.println("NoLobby : waiting for lobby with name of"+input.packetMessage);
       ClientContainer.state="Waiting";
       return;
