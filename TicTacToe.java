@@ -8,7 +8,7 @@ public class TicTacToe extends Game{
   public String welcomeMessage(){
     String s = "Welcome to Classic TicTacToe "+myRoom.players[0]+" and "+myRoom.players[1]+". Let me print you out a board\n"+
     printBoard()+
-    "\n on your turn pick the number you want to choose."+myRoom.players[0]+" is X" ;
+    "\n on your turn pick the number you want to choose."+myRoom.players[0]+" is X \n" ;
     return s;
   }
   public String move(String message) throws InvalidMoveException{
@@ -27,7 +27,7 @@ public class TicTacToe extends Game{
     return printBoard();
   }
   public String finish(){
-    return "The final board is "+printBoard();
+    return "The final board is \n"+printBoard()+"\n"+myRoom.players[myRoom.turnSwitch]+" is the winner";
   }
 
   private int getBoard(String message) throws InvalidMoveException{
