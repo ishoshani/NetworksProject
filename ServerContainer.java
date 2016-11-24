@@ -5,6 +5,7 @@ import java.util.Hashtable;
 public class ServerContainer{
   public static ServerState servState = new ServerState();
   public static Hashtable<Integer,Room> roomList = new Hashtable<Integer,Room>();
+  public static Hashtable<String, Room> privateRooms = new Hashtable<String,Room>();
 
 
   public static void main(String[] args) throws IOException{

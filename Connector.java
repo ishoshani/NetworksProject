@@ -70,14 +70,14 @@ public class Connector extends Thread{
         // }
         return new ChatPacket("FinishGame",CurrentGame.finish());
       }
-       return CurrentGame.getNextMessage();
+      return CurrentGame.getNextMessage();
     }
     if(input.packetType.equals("Playing")){
       try{
-      return new ChatPacket("otherTurn", CurrentGame.SendCommand(uID, input.packetMessage), input.gameID);
-    }catch (InvalidMoveException e){
-      return new ChatPacket("yourTurn", e.toString(), input.gameID);
-    }
+        return new ChatPacket("otherTurn", CurrentGame.SendCommand(uID, input.packetMessage), input.gameID);
+      }catch (InvalidMoveException e){
+        return new ChatPacket("yourTurn", e.toString(), input.gameID);
+      }
     }
 
 
@@ -90,10 +90,32 @@ public class Connector extends Thread{
       }if(command.equals("hello")){
         c = new ChatPacket("Message", "hello "+username);
         return c;
+      }if(command.matches("lobby(.*)")){
+        String[] cPieces= command.split(" ");
+        if(cPieces.length!=3){
+          return new ChatPacket("Message", "Usage: lobby [password] [game] 0 for Convo 1 for TicTacToe)");
+        }
+        String pass = cPieces[1];
+        int gamePick = Integer.parseInt(cPieces[2]);
+        synchronized(ServerContainer.privateRooms){
+          if(ServerContainer.privateRooms.containsKey(pass)){
+            CurrentGame = ServerContainer.privateRooms.get(pass);
+            CurrentGame.AddPlayer(username, uID, this);
+            CurrentGame.state=Room.PLAYING;
+            c = new ChatPacket("LobbyBegin", uID.toString());
+            return c;
+          }else{
+            ServerContainer.privateRooms.put(pass,new Room(gamePick));
+            CurrentGame = ServerContainer.privateRooms.get(pass);
+            CurrentGame.AddPlayer(username,uID, this);
+            c = new ChatPacket("NoLobbies",uID.toString());
+            return c;
+          }
+        }
       }if(command.matches("play(.*)")){
         int gamePick;
         try{
-        gamePick = Integer.parseInt(command.split(" ")[1]);
+          gamePick = Integer.parseInt(command.split(" ")[1]);
         }catch(ArrayIndexOutOfBoundsException e){
           return new ChatPacket("Message","Usage: play [game], 0 for Convo 1 for TicTacToe\n");
         }
