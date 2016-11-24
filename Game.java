@@ -9,7 +9,7 @@ public class Game{
     s+="This is simply a polite conversation. Take turns speaking, and wait until the other is complete. "+myRoom.players[1]+" will go first.\n";
     return s;
   }
-  public String move(String command){
+  public String move(String command) throws InvalidMoveException{
     if(command.equals("goodbye")){
       myRoom.state=Room.DONE;
       return "";

@@ -14,6 +14,7 @@ public class Room{
   final static int PLAYING = 1;
   final static int DONE = 2;
 
+
   public Room(){
     players = new String[2];
     playerID = new Integer[2];
@@ -26,12 +27,13 @@ public class Room{
     String s = game.welcomeMessage();
     return s;
   }
-  public String SendCommand(Integer id, String Message){
+  public String SendCommand(Integer id, String Message) throws InvalidMoveException{
     if(turn == playerID[0]){
       if(id != playerID[0]){
         return "please wait your turn";
       }
       ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
+
         nextMessage = out;
         if(state != DONE){
         turnSwitch = 1;
