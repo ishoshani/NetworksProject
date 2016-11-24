@@ -16,6 +16,7 @@ public class TicTacToe extends Game{
     if(message.equals("concede")){
         myRoom.state=Room.DONE;
         myRoom.changeTurnSwitch();
+        return "You Conceded";
     }
     if(myRoom.turnSwitch==1){
       mark = -1;
