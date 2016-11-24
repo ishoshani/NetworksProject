@@ -130,7 +130,7 @@ public class TicTacToe extends Game{
           out+=" O";
         }
       }
-      out+="/n";
+      out+="\n";
     }
     return out;
   }

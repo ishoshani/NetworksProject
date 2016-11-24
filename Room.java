@@ -84,7 +84,7 @@ public class Room{
     ChatPacket n;
       n =  nextMessage;
       if(n == null){
-        n = new ChatPacket("otherTurn","-");
+        n = new ChatPacket("otherTurn","");
       }else{
         nextMessage=null;
       }
