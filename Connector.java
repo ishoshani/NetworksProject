@@ -90,7 +90,7 @@ public class Connector extends Thread{
       }if(command.equals("hello")){
         c = new ChatPacket("Message", "hello "+username);
         return c;
-      }if(command.matches("play(*)")){
+      }if(command.matches("play(.*)")){
         int gamePick;
         try{
         gamePick = Integer.parseInt(command.split(" ")[1]);
