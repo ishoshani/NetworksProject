@@ -97,7 +97,7 @@ public class Connector extends Thread{
         }catch(ArrayIndexOutOfBoundsException e){
           return new ChatPacket("Message","Usage: play [game], 0 for Convo 1 for TicTacToe\n");
         }
-        if(gamePick!=0||gamePick!=1){
+        if(gamePick!=0&&gamePick!=1){
           return new ChatPacket("Message","please select a game you want to play, 0 for Convo 1 for TicTacToe\n");
         }
         synchronized (ServerContainer.roomList){
