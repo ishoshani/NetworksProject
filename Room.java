@@ -19,7 +19,7 @@ public class Room{
     players = new String[2];
     playerID = new Integer[2];
     connections = new Connector[2];
-    game = new Game(this);
+    game = new TicTacToe(this);
     nextMessage = null;
     state = WAITING;
   }
