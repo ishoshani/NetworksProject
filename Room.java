@@ -90,6 +90,13 @@ public class Room{
       }
     return n;
   }
+  public void changeTurnSwitch(){
+    if (turnSwitch==0){
+      turnSwitch=1;
+    }else{
+      turnSwitch=0;
+    }
+  }
 
 
 

@@ -13,6 +13,10 @@ public class TicTacToe extends Game{
   }
   public String move(String message) throws InvalidMoveException{
     int mark=1;
+    if(message.equals("concede")){
+        myRoom.state=Room.DONE;
+        myRoom.changeTurnSwitch();
+    }
     if(myRoom.turnSwitch==1){
       mark = -1;
     }
