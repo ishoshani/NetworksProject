@@ -6,9 +6,9 @@ public class TicTacToe extends Game{
     board =new int[][] {{0,0,0},{0,0,0},{0,0,0}};
   }
   public String welcomeMessage(){
-    String s = "Welcome to Classic TicTacToe "+myRoom.players[0]+" and "+myRoom.players[1]+". Let me print you out a board/n"+
+    String s = "Welcome to Classic TicTacToe "+myRoom.players[0]+" and "+myRoom.players[1]+". Let me print you out a board\n"+
     printBoard()+
-    "on your turn pick the number you want to choose."+myRoom.players[0]+" is X" ;
+    "\n on your turn pick the number you want to choose."+myRoom.players[0]+" is X" ;
     return s;
   }
   public String move(String message) throws InvalidMoveException{
@@ -119,12 +119,12 @@ public class TicTacToe extends Game{
   private String printBoard(){
     String out ="";
     Integer count = 0;
-    for(int[] i : board){
-      for(int j : i){
+    for(int i = 0 ; i<3; i++){
+      for(int j =0 ; j<3; j++){
         count++;
-        if(i[j]==0){
+        if(board[i][j]==0){
           out+=" "+count.toString();
-        }else if (i[j]==1) {
+        }else if (board[i][j]==1) {
           out+=" X";
         }else{
           out+=" O";
