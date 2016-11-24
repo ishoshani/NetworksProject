@@ -90,14 +90,23 @@ public class Connector extends Thread{
       }if(command.equals("hello")){
         c = new ChatPacket("Message", "hello "+username);
         return c;
-      }if(command.equals("play")){
+      }if(command.equals("play (.*)")){
+        int gamePick;
+        try{
+        gamePick = Integer.parseInt(command.split(" ")[1]);
+        }catch(ArrayIndexOutOfBoundsException e){
+          return new ChatPacket("Message","Usage: play [game], 0 for Convo 1 for TicTacToe\n");
+        }
+        if(0>gamePick||gamePick<1){
+          return new ChatPacket("Message","please select a game you want to play, 0 for Convo 1 for TicTacToe\n");
+        }
         synchronized (ServerContainer.roomList){
-          Integer gameKey = findGame();
+          Integer gameKey = findGame(gamePick);
           if(gameKey==null){
-            ServerContainer.roomList.put(uID,new Room());
+            ServerContainer.roomList.put(uID,new Room(gamePick));
             Room newGame= ServerContainer.roomList.get(uID);
             newGame.AddPlayer(username, uID, this);
-            CurrentGame = newGame;;
+            CurrentGame = newGame;
             c = new ChatPacket("NoLobbies",uID.toString());
             return c;
           }
@@ -117,10 +126,12 @@ public class Connector extends Thread{
     c = new ChatPacket("Message", "sorry didnt get that" + input);
     return c;
   }
-  public Integer findGame(){
+  public Integer findGame(int gameID){
     for(Integer k : ServerContainer.roomList.keySet()){
-      if(ServerContainer.roomList.get(k).state==Room.WAITING){
-        return k;
+      if(ServerContainer.roomList.get(k).gameID==gameID){
+        if(ServerContainer.roomList.get(k).state==Room.WAITING){
+          return k;
+        }
       }
     }
     return null;

@@ -9,17 +9,19 @@ public class Room{
   int turnSwitch =0;
   Integer turn = 0;
   Integer state;
+  Integer gameID;
   Game game;
   final static int WAITING = 0;
   final static int PLAYING = 1;
   final static int DONE = 2;
 
 
-  public Room(){
+  public Room(int gameID){
     players = new String[2];
     playerID = new Integer[2];
     connections = new Connector[2];
-    game = new TicTacToe(this);
+    this.gameID = gameID;
+    game = getGame(gameID);
     nextMessage = null;
     state = WAITING;
   }
@@ -34,11 +36,11 @@ public class Room{
       }
       ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
 
-        nextMessage = out;
-        if(state != DONE){
+      nextMessage = out;
+      if(state != DONE){
         turnSwitch = 1;
         turn = playerID[turnSwitch];
-        }
+      }
       return "";
     }
     if(turn == playerID[1]){
@@ -46,10 +48,10 @@ public class Room{
         return "please wait your turn";
       }
       ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
-        nextMessage = out;
+      nextMessage = out;
       if(state != DONE){
         turnSwitch=0;
-      turn = playerID[turnSwitch];
+        turn = playerID[turnSwitch];
       }
       return "";
     }
@@ -82,12 +84,12 @@ public class Room{
 
   public ChatPacket getNextMessage(){
     ChatPacket n;
-      n =  nextMessage;
-      if(n == null){
-        n = new ChatPacket("otherTurn","");
-      }else{
-        nextMessage=null;
-      }
+    n =  nextMessage;
+    if(n == null){
+      n = new ChatPacket("otherTurn","");
+    }else{
+      nextMessage=null;
+    }
     return n;
   }
   public void changeTurnSwitch(){
@@ -97,8 +99,12 @@ public class Room{
       turnSwitch=0;
     }
   }
-
-
-
-
+  public Game getGame(int gameID){
+    if(gameID == 0){
+      return new Game(this);
+    }if(gameID == 1){
+      return new TicTacToe(this);
+    }
+    return new Game(this);
+  }
 }
