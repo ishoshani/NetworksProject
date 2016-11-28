@@ -28,7 +28,11 @@ public class ClientContainer{
       ChatPacket welcome = (ChatPacket)in.readObject();
       System.out.println(welcome);
       while(!state.equals("Exit")){
-        while(state.equals("Menu")){
+        if(in.ready()){
+          ChatPacker unexpectedMessage = (ChatPacket)in.readObject();
+          ClientProtocol.processProcedure(unexpectedMessage)
+        }
+        if(state.equals("Menu")){
           if(!stdin.ready()){
             out.writeObject(new ChatPacket("KeepAlive"));
             ChatPacket KA=(ChatPacket)in.readObject();
@@ -44,20 +48,20 @@ public class ClientContainer{
             ClientProtocol.processProcedure(message);
           }
         }
-        while(state.equals("WaitingForLobby")){
+        if(state.equals("WaitingForLobby")){
           System.out.println("got into Waiting Section");
           out.writeObject(new ChatPacket(state));
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
         }
-        while(state.equals("BeginPlay")){
+        if(state.equals("BeginPlay")){
           out.writeObject(new ChatPacket(state, "ready"));
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
         }
-        while(state.equals("Playing")){
+        if(state.equals("Playing")){
           if(!stdin.ready()){
             out.writeObject(new ChatPacket("KeepAlive","", gameID));
             out.flush();
@@ -74,7 +78,7 @@ public class ClientContainer{
             ClientProtocol.processProcedure(message);
           }
         }
-        while(state.equals("WaitingForTurn")){
+        if(state.equals("WaitingForTurn")){
           if(stdin.ready()){
             String trash = stdin.readLine();
             System.out.println("wait your turn, threw away "+ trash);
