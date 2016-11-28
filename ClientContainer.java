@@ -18,8 +18,10 @@ public class ClientContainer{
     Socket echoSocket = new Socket(hostName,portNumber);
     ObjectOutputStream out = new ObjectOutputStream(echoSocket.getOutputStream());
     ObjectInputStream in = new ObjectInputStream(echoSocket.getInputStream());
+
     BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))
     ){
+      echoSocket.setSoTimeout(250);
       String userInput;
       out.writeObject(new ChatPacket("Start"));
       out.flush();
@@ -27,15 +29,24 @@ public class ClientContainer{
       System.out.println(welcome);
       while(!state.equals("Exit")){
         while(state.equals("Menu")){
+          if(!stdin.ready()){
+            out.writeObject(new ChatPacket("KeepAlive"));
+            ChatPacket KA=(ChatPacket)in.readObject();
+            if(KA==null){
+              System.out.println("connection Lost, exiting Client");
+              state="Exit";
+            }
+            ClientProtocol.processProcedure(KA);
+          }
           if((userInput = stdin.readLine()) != null){
             out.writeObject(new ChatPacket(state, userInput));
             ChatPacket message= (ChatPacket)in.readObject();
             ClientProtocol.processProcedure(message);
           }
         }
-        while(state.equals("Waiting")){
+        while(state.equals("WaitingForLobby")){
           System.out.println("got into Waiting Section");
-          out.writeObject(new ChatPacket(state, "isAlive"));
+          out.writeObject(new ChatPacket(state));
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
@@ -47,6 +58,16 @@ public class ClientContainer{
           ClientProtocol.processProcedure(message);
         }
         while(state.equals("Playing")){
+          if(!stdin.ready()){
+            out.writeObject(new ChatPacket("KeepAlive","", gameID));
+            out.flush();
+            ChatPacket KA=(ChatPacket)in.readObject();
+            if(KA==null){
+              System.out.println("connection Lost, exiting Client");
+              state="Exit";
+            }
+            ClientProtocol.processProcedure(KA);
+          }
           if((userInput = stdin.readLine()) != null){
             out.writeObject(new ChatPacket(state, userInput, gameID));
             ChatPacket message= (ChatPacket)in.readObject();
@@ -58,7 +79,7 @@ public class ClientContainer{
             String trash = stdin.readLine();
             System.out.println("wait your turn, threw away "+ trash);
           }
-          out.writeObject(new ChatPacket(state, "isAlive"));
+          out.writeObject(new ChatPacket(state));
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);

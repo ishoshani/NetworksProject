@@ -39,13 +39,15 @@ public class Connector extends Thread{
       c = new ChatPacket("Message", "Welcome to IRC!");
       return c;
     }
-
-    if(input.packetType.equals("Waiting")){
+    if(input.packetType.equals("KeepAlive")){
+      return new ChatPacket("KeepAlive");
+    }
+    if(input.packetType.equals("WaitingForLobby")){
       if (CurrentGame.state==Room.PLAYING){
         c = new ChatPacket("LobbyBegin", uID.toString());
         return c;
       }else{
-        return new ChatPacket("StillAlive","");
+        return new ChatPacket("KeepAlive");
       }
     }
 
@@ -53,21 +55,16 @@ public class Connector extends Thread{
       String output = CurrentGame.welcomeMessage();
       String type;
       if(CurrentGame.turn == uID){
-        type = "yourTurn";
+        type = "YourTurn";
       }
       else{
-        type = "otherTurn";
+        type = "OtherTurn";
       }
       c = new ChatPacket(type, output, input.gameID);
       return c;
     }
     if(input.packetType.equals("WaitingForTurn")){
       if(CurrentGame.state==Room.DONE){
-        // synchronized(ServerContainer.roomList){
-        //   if(ServerContainer.roomList.containsKey(CurrentGameID)){
-        //   ServerContainer.roomList.remove(CurrentGameID);
-        // }
-        // }
         return new ChatPacket("FinishGame",CurrentGame.finish());
       }
       return CurrentGame.getNextMessage();
@@ -112,7 +109,7 @@ public class Connector extends Thread{
             return c;
           }
         }
-      }if(command.matches("play(.*)")){
+      }if(command.matches("quickplay(.*)")){
         int gamePick;
         try{
           gamePick = Integer.parseInt(command.split(" ")[1]);

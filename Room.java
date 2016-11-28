@@ -34,7 +34,7 @@ public class Room{
       if(id != playerID[0]){
         return "please wait your turn";
       }
-      ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
+      ChatPacket out = new ChatPacket("YourTurn", game.move(Message));
 
       nextMessage = out;
       if(state != DONE){
@@ -47,7 +47,7 @@ public class Room{
       if(id != playerID[1]){
         return "please wait your turn";
       }
-      ChatPacket out = new ChatPacket("yourTurn", game.move(Message));
+      ChatPacket out = new ChatPacket("YourTurn", game.move(Message));
       nextMessage = out;
       if(state != DONE){
         turnSwitch=0;
@@ -86,7 +86,7 @@ public class Room{
     ChatPacket n;
     n =  nextMessage;
     if(n == null){
-      n = new ChatPacket("otherTurn","");
+      n = new ChatPacket("KeepAlive");
     }else{
       nextMessage=null;
     }

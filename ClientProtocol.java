@@ -18,12 +18,12 @@ public class ClientProtocol{
       ClientContainer.state="BeginPlay";
       return;
     }
-    if(input.packetType.equals("yourTurn")){
+    if(input.packetType.equals("YourTurn")){
       System.out.println(input.packetMessage);
       ClientContainer.state="Playing";
       return;
     }
-    if(input.packetType.equals("otherTurn")){
+    if(input.packetType.equals("OtherTurn")){
       System.out.print(input.packetMessage);
       try{
         Thread.sleep(3000);
@@ -40,16 +40,22 @@ public class ClientProtocol{
       System.out.println("Game was finished. Returning to Menu");
       return;
     }
-    if(input.packetType.equals("StillAlive")){
-      System.out.println("StillWaiting");
+    if(input.packetType.equals("Error")){
+      System.out.println(input);
+    }
+    if(input.packetType.equals("KeepAlive")){
       try{
-        Thread.sleep(3000);
+        Thread.sleep(500);
       }catch(InterruptedException e){
         System.err.println("Sleep interrupted" + e);
         System.exit(1);
       }
       ClientContainer.state="Waiting";
       return;
+    }
+    if(input.packetType.equals("SafeToExit")){
+      System.out.println("Ready to Exit");
+      ClientContainer.state="Exit";
     }
     System.out.println("cound not process packet "+ input);
     return;
