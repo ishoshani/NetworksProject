@@ -1,6 +1,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 /**
 Handles connection to server and sending it messages. Block on waiting to Receive.
 **/
@@ -8,6 +9,15 @@ public class ClientContainer{
   static String state = "Menu";//Begin in menu state whenever opened
   static Integer gameID = 0;
   static Boolean showKeepAlive = false;
+  static Integer[] listOfGame;
+  final static String usage=
+  "The Following Commands are avaialable\n"+
+  "quickplay [gameID], 0 for conversation, 1 for TicTacToe\n"+
+  "PrivateRoom [password] [gameID], 0 for conversation, 1 for TicTacToe\n"+
+  "username [newName]\n"+
+  "hello\n"+
+  "status\n"+
+  "exit\n";
   public static void main(String[] args) {
     if(args.length != 2){
       System.err.println(
@@ -44,9 +54,11 @@ public class ClientContainer{
             ClientProtocol.processProcedure(KA);
           }
           if((userInput = stdin.readLine()) != null){
+            if(validateMenu(userInput)){
             out.writeObject(new ChatPacket(state, userInput));
             ChatPacket message= (ChatPacket)in.readObject();//blocks on call :(
             ClientProtocol.processProcedure(message);
+            }
           }
         }
         if(state.equals("WaitingForRoom")){//continue waiting for room
@@ -87,8 +99,8 @@ public class ClientContainer{
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
-          }
         }
+      }
     }catch (UnknownHostException e) {
       System.err.println("Don't know about host " + hostName);
     }
@@ -101,5 +113,32 @@ public class ClientContainer{
     }finally{
       System.out.println("Exiting Client");
     }
+  }
+  public static boolean validateMenu(String input){
+    boolean valid = false;
+    if(state == "Menu"){
+      if(input.matches("username (.*)")){
+        if(input.split(" ").length==2){
+          valid = true;
+        }
+      }else if(input.matches("quickplay(.*)")){
+        if(input.split(" ").length==2){
+          if(Arrays.asList(listOfGame).contains(input.split(" ")[1])){
+          valid = true;
+        }
+        }
+      }
+      else if(input.matches("lobby(.*)")){
+        if(input.split(" ").length==3){
+          if(Arrays.asList(listOfGame).contains(input.split(" ")[2])){
+            valid = true;
+          }
+        }
+      }
+      else if((input.matches("hello"))||(input.matches("status"))||(input.matches("exit"))){
+        valid = true;
+      }
+    }
+    return valid;
   }
 }

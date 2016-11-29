@@ -12,14 +12,7 @@ public class Connector extends Thread{
   Room CurrentGame;
   Integer uID;
   Boolean spinDown=false;
-  final String usage=
-  "The Following Commands are avaialable\n"+
-  "quickplay [gameID], 0 for conversation, 1 for TicTacToe\n"+
-  "PrivateRoom [password] [gameID], 0 for conversation, 1 for TicTacToe\n"+
-  "username [newName]\n"+
-  "hello\n"+
-  "status\n"+
-  "exit\n";
+
   public Connector(Socket socket, Integer userNumber){
     super("Connection"+socket);
     username = "newUser"+userNumber;
@@ -57,7 +50,7 @@ Choice Tree for Input from client to server.
   public ChatPacket process(ChatPacket input){
     ChatPacket c;
     if(input.packetType.equals("Start")){//Handle Handshake
-      c = new ChatPacket("Message", "Welcome to IRC!\n"+usage);
+      c = new ChatPacket("Start","2,0,1");//2 games avaialble, codes 0 and 1
       return c;
     }
     else if(input.packetType.equals("KeepAlive")){//Handle Standard KeepAlive
@@ -168,11 +161,11 @@ Choice Tree for Input from client to server.
         c = new ChatPacket("SafeToExit","Have a wonderful day");
         return c;
       }else{
-        c = new ChatPacket("Message", "Did Not understand Menu Selection:"+command+". Here are your options\n"+usage);
+        c = new ChatPacket("Message", "Did Not understand Menu Selection:"+command);
         return c;
       }
     }else{
-    c = new ChatPacket("Message", "sorry didnt get that " + input +"\n"+usage);//bad Command
+    c = new ChatPacket("Message", "sorry didnt get that " + input );//bad Command
     return c;
   }
   }

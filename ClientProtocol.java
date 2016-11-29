@@ -5,6 +5,17 @@ Choice Tree for input from server to Client
 **/
 public class ClientProtocol{
   public static void processProcedure(ChatPacket input){
+    if(input.packetType.equals("Start")){
+      String string = "Welcome to GameServer!\n"+ClientContainer.usage;
+      String[] startingMessage = input.packetMessage.split(",");
+      Integer[] listOfGame = new Integer [Integer.parseInt(startingMessage[0])];
+      for (int i = 0;i<listOfGame.length ; i++ ) {//get all avaialable game keys
+        listOfGame[i]=Integer.parseInt(startingMessage[i+1]);
+      }
+      ClientContainer.listOfGame =listOfGame;
+      System.out.println(string);
+      return;
+    }
     if(input.packetType.equals("Message")){//handle generic message
       System.out.println(input);
       return;
