@@ -50,7 +50,6 @@ public class ClientProtocol{
         System.err.println("Sleep interrupted" + e);
         System.exit(1);
       }
-      ClientContainer.state="Waiting";
       return;
     }
     if(input.packetType.equals("SafeToExit")){
