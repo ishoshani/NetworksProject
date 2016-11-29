@@ -18,6 +18,7 @@ public class ClientContainer{
     String hostName = args[0];
     int portNumber = Integer.parseInt(args[1]);
     showKeepAlive=Boolean.parseBoolean(args[2]);
+    //Java 7's new Try with recources. Automatically closes all opened recources when try ends or error is caught.
     try(
     Socket echoSocket = new Socket(hostName,portNumber);
     ObjectOutputStream out = new ObjectOutputStream(echoSocket.getOutputStream());
@@ -88,22 +89,17 @@ public class ClientContainer{
           ClientProtocol.processProcedure(message);
           }
         }
-        System.out.println("Exiting from Client");
-        echoSocket.close();
     }catch (UnknownHostException e) {
       System.err.println("Don't know about host " + hostName);
-      System.exit(1);
     }
     catch (IOException e) {
-      System.err.println("Couldn't get I/O for the connection to " +
+      System.err.println("Something Happened to the server! " +
       hostName);
-      System.exit(1);
     }
     catch (ClassNotFoundException e){
       System.err.println("Unexpected type of Object" + e);
-      System.exit(1);
-
+    }finally{
+      System.out.println("Exiting Client");
     }
-
   }
 }

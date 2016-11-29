@@ -43,7 +43,7 @@ public class ClientProtocol{
       return;
     }
     if(input.packetType.equals("Error")){//handle error from server
-      System.out.println(input);
+      ClientContainer.state="Exit";
       return;
     }
     if(input.packetType.equals("KeepAlive")){//handle notice that Server Connection is fine
@@ -61,6 +61,7 @@ public class ClientProtocol{
     if(input.packetType.equals("SafeToExit")){//Handle Exit Procedure
       System.out.println("Ready to Exit");
       ClientContainer.state="Exit";
+      return;
     }
     System.out.println("cound not process packet "+ input);//Error in packet.
     return;
