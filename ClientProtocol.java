@@ -9,12 +9,12 @@ public class ClientProtocol{
       System.out.println(input);
       return;
     }
-    if(input.packetType.equals("NoLobbies")){//handle lack of lobbies found
-      System.out.println("NoLobby : waiting for lobby with name of"+input.packetMessage);
-      ClientContainer.state="WaitingForLobby";
+    if(input.packetType.equals("NoRooms")){//handle lack of Rooms found
+      System.out.println("NoRoom : waiting for room with name of"+input.packetMessage);
+      ClientContainer.state="WaitingForRoom";
       return;
     }
-    if(input.packetType.equals("LobbyBegin")){//let server know that client is ready to play
+    if(input.packetType.equals("RoomBegin")){//let server know that client is ready to play
       System.out.println("got Into game");
       ClientContainer.gameID=Integer.parseInt(input.packetMessage);
       ClientContainer.state="BeginPlay";
@@ -42,11 +42,11 @@ public class ClientProtocol{
       System.out.println("Game was finished. Returning to Menu");
       return;
     }
-    if(input.packetType.equals("Error")){//handle error from server
+    if(input.packetType.equals("Error")){//handle error from server. Not currently in use, but nice to have if need be.
       ClientContainer.state="Exit";
       return;
     }
-    if(input.packetType.equals("KeepAlive")){//handle notice that Server Connection is fine
+    if(input.packetType.equals("KeepAlive")){//handle notice that Server Connection is fine.
       try{
         if(ClientContainer.showKeepAlive){//only print message if this is On for debug
         System.out.println(input);

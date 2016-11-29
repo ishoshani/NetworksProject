@@ -15,7 +15,7 @@ public class Connector extends Thread{
   final String usage=
   "The Following Commands are avaialable\n"+
   "quickplay [gameID], 0 for conversation, 1 for TicTacToe\n"+
-  "PrivateLobby [password] [gameID], 0 for conversation, 1 for TicTacToe\n"+
+  "PrivateRoom [password] [gameID], 0 for conversation, 1 for TicTacToe\n"+
   "username [newName]\n"+
   "hello\n"+
   "status\n"+
@@ -63,9 +63,9 @@ Choice Tree for Input from client to server.
     else if(input.packetType.equals("KeepAlive")){//Handle Standard KeepAlive
       return new ChatPacket("KeepAlive");
     }
-    else if(input.packetType.equals("WaitingForLobby")){//Handle Lobby Waiting KeepAlive
+    else if(input.packetType.equals("WaitingForRoom")){//Handle Room Waiting KeepAlive
       if (CurrentGame.state==Room.PLAYING){
-        c = new ChatPacket("LobbyBegin", uID.toString());
+        c = new ChatPacket("RoomBegin", uID.toString());
         return c;
       }else{
         return new ChatPacket("KeepAlive");
@@ -108,10 +108,10 @@ Choice Tree for Input from client to server.
       }else if(command.equals("hello")){//Echo UserName
         c = new ChatPacket("Message", "hello "+username);
         return c;
-      }else if(command.matches("lobby(.*)")){//run PrivateLobby
+      }else if(command.matches("room(.*)")){//run PrivateRoom
         String[] cPieces= command.split(" ");
         if(cPieces.length!=3){
-          return new ChatPacket("Message", "Usage: lobby [password] [game] 0 for Convo 1 for TicTacToe)");
+          return new ChatPacket("Message", "Usage: room [password] [game] 0 for Convo 1 for TicTacToe)");
         }
         String pass = cPieces[1];
         int gamePick = Integer.parseInt(cPieces[2]);
@@ -120,13 +120,13 @@ Choice Tree for Input from client to server.
             CurrentGame = ServerContainer.privateRooms.get(pass);
             CurrentGame.AddPlayer(username, uID, this);
             CurrentGame.state=Room.PLAYING;
-            c = new ChatPacket("LobbyBegin", uID.toString());
+            c = new ChatPacket("RoomBegin", uID.toString());
             return c;
           }else{
             ServerContainer.privateRooms.put(pass,new Room(gamePick));
             CurrentGame = ServerContainer.privateRooms.get(pass);
             CurrentGame.AddPlayer(username,uID, this);
-            c = new ChatPacket("NoLobbies",uID.toString());
+            c = new ChatPacket("NoRooms",uID.toString());
             return c;
           }
         }
@@ -135,7 +135,7 @@ Choice Tree for Input from client to server.
         try{
           gamePick = Integer.parseInt(command.split(" ")[1]);
         }catch(ArrayIndexOutOfBoundsException e){
-          return new ChatPacket("Message","Usage: play [game], 0 for Convo 1 for TicTacToe\n");
+          return new ChatPacket("Message","Usage: quickplay [game], 0 for Convo 1 for TicTacToe\n");
         }
         if(gamePick!=0&&gamePick!=1){
           return new ChatPacket("Message","please select a game you want to play, 0 for Convo 1 for TicTacToe\n");
@@ -147,13 +147,13 @@ Choice Tree for Input from client to server.
             Room newGame= ServerContainer.roomList.get(uID);
             newGame.AddPlayer(username, uID, this);
             CurrentGame = newGame;
-            c = new ChatPacket("NoLobbies",uID.toString());
+            c = new ChatPacket("NoRooms",uID.toString());
             return c;
           }
           Room game = ServerContainer.roomList.get(gameKey);
           game.AddPlayer(username, uID, this);
           CurrentGame = game;
-          c = new ChatPacket("LobbyBegin", uID.toString());
+          c = new ChatPacket("RoomBegin", uID.toString());
           return c;
         }
       }else if(command.matches("status")){//get Server Status.

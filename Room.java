@@ -102,7 +102,7 @@ public class Room{
       turn = playerID[turnSwitch];
       return true;
     }
-    System.err.println("someone tried to connect to a full lobby");
+    System.err.println("someone tried to connect to a full room");
     return false;
   }
   /**
@@ -113,7 +113,7 @@ public class Room{
     n =  nextMessage;
     if(BothConnected()){//Test that both players are connected
       state=DONE;
-      if(connections[0].spinDown){//Whoever is still in the lobby wins.
+      if(connections[0].spinDown){//Whoever is still in the room wins.
         turnSwitch=1;
       }
       if(connections[1].spinDown){

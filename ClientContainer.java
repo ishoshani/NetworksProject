@@ -9,15 +9,15 @@ public class ClientContainer{
   static Integer gameID = 0;
   static Boolean showKeepAlive = false;
   public static void main(String[] args) {
-    if(args.length != 3){
+    if(args.length != 2){
       System.err.println(
-      "Usage: needs three arguments, java ClientContainer <hostname> <portnumber> <showKeepAlive>"
+      "Usage: needs three arguments, java ClientContainer <hostname> <showKeepAlive>"
       );
       System.exit(1);
     }
     String hostName = args[0];
-    int portNumber = Integer.parseInt(args[1]);
-    showKeepAlive=Boolean.parseBoolean(args[2]);
+    int portNumber = 19;//Defined in RFC
+    showKeepAlive=Boolean.parseBoolean(args[1]);
     //Java 7's new Try with recources. Automatically closes all opened recources when try ends or error is caught.
     try(
     Socket echoSocket = new Socket(hostName,portNumber);
@@ -49,14 +49,14 @@ public class ClientContainer{
             ClientProtocol.processProcedure(message);
           }
         }
-        if(state.equals("WaitingForLobby")){//continue waiting for lobby
+        if(state.equals("WaitingForRoom")){//continue waiting for room
           out.writeObject(new ChatPacket(state));//send test to keepalive and also if room is full
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
         }
         if(state.equals("BeginPlay")){
-          out.writeObject(new ChatPacket(state, "ready"));//send that client is ready to begin game once lobby is full
+          out.writeObject(new ChatPacket(state, "ready"));//send that client is ready to begin game once room is full
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
@@ -93,7 +93,7 @@ public class ClientContainer{
       System.err.println("Don't know about host " + hostName);
     }
     catch (IOException e) {
-      System.err.println("Something Happened to the server! " +
+      System.err.println("Something Happened to the server! It may not be taking connections at this port or it just died" +
       hostName);
     }
     catch (ClassNotFoundException e){
