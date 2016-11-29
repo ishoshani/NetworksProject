@@ -60,10 +60,10 @@ Choice Tree for Input from client to server.
       c = new ChatPacket("Message", "Welcome to IRC!\n"+usage);
       return c;
     }
-    if(input.packetType.equals("KeepAlive")){//Handle Standard KeepAlive
+    else if(input.packetType.equals("KeepAlive")){//Handle Standard KeepAlive
       return new ChatPacket("KeepAlive");
     }
-    if(input.packetType.equals("WaitingForLobby")){//Handle Lobby Waiting KeepAlive
+    else if(input.packetType.equals("WaitingForLobby")){//Handle Lobby Waiting KeepAlive
       if (CurrentGame.state==Room.PLAYING){
         c = new ChatPacket("LobbyBegin", uID.toString());
         return c;
@@ -72,7 +72,7 @@ Choice Tree for Input from client to server.
       }
     }
 
-    if(input.packetType.equals("BeginPlay")){//Handle Ready For Game Message
+    else if(input.packetType.equals("BeginPlay")){//Handle Ready For Game Message
       String output = CurrentGame.welcomeMessage();
       String type;
       if(CurrentGame.turn == uID){//Do I get to start?
@@ -84,13 +84,13 @@ Choice Tree for Input from client to server.
       c = new ChatPacket(type, output, input.gameID);
       return c;
     }
-    if(input.packetType.equals("WaitingForTurn")){//Handle KeepAlive while waiting on a turn
+    else if(input.packetType.equals("WaitingForTurn")){//Handle KeepAlive while waiting on a turn
       if(CurrentGame.state==Room.DONE){
         return new ChatPacket("FinishGame",CurrentGame.finish());
       }
       return CurrentGame.getNextMessage();
     }
-    if(input.packetType.equals("Playing")){//Handle Message for Game Moves.
+    else if(input.packetType.equals("Playing")){//Handle Message for Game Moves.
       try{
         return new ChatPacket("OtherTurn", CurrentGame.SendCommand(uID, input.packetMessage), input.gameID);
       }catch (InvalidMoveException e){
@@ -99,16 +99,16 @@ Choice Tree for Input from client to server.
     }
 
 
-    if(input.packetType.equals("Menu")){//Handle Non-game related Commands
+    else if(input.packetType.equals("Menu")){//Handle Non-game related Commands
       String command = input.packetMessage;
       if(command.matches("username (.*)")){//Reset Username
         username=command.split(" ")[1];
         c = new ChatPacket("Message", "Username is now "+username);
         return c;
-      }if(command.equals("hello")){//Echo UserName
+      }else if(command.equals("hello")){//Echo UserName
         c = new ChatPacket("Message", "hello "+username);
         return c;
-      }if(command.matches("lobby(.*)")){//run PrivateLobby
+      }else if(command.matches("lobby(.*)")){//run PrivateLobby
         String[] cPieces= command.split(" ");
         if(cPieces.length!=3){
           return new ChatPacket("Message", "Usage: lobby [password] [game] 0 for Convo 1 for TicTacToe)");
@@ -130,7 +130,7 @@ Choice Tree for Input from client to server.
             return c;
           }
         }
-      }if(command.matches("quickplay(.*)")){//run Public MatchMaking
+      }else if(command.matches("quickplay(.*)")){//run Public MatchMaking
         int gamePick;
         try{
           gamePick = Integer.parseInt(command.split(" ")[1]);
@@ -156,19 +156,23 @@ Choice Tree for Input from client to server.
           c = new ChatPacket("LobbyBegin", uID.toString());
           return c;
         }
-      }if(command.matches("status")){//get Server Status.
+      }else if(command.matches("status")){//get Server Status.
         synchronized(ServerContainer.servState){
           c = new ChatPacket("Message", "there are currently "+ServerContainer.servState.currentUsers+" users");
         }
         return c;
-      }if(command.equals("exit")){
+      }else if(command.matches("exit")){
         spinDown=true;
         c = new ChatPacket("SafeToExit","Have a wonderful day");
         return c;
+      }else{
+        c = new ChatPacket("Message", "Did Not understand Menu Selection:"+command+". Here are your options\n"+usage);
+        return c;
       }
-    }
+    }else{
     c = new ChatPacket("Message", "sorry didnt get that " + input +"\n"+usage);//bad Command
     return c;
+  }
   }
   /**
   Find a game on the server with the given Game ID. use whatever comes up first.
@@ -187,6 +191,7 @@ Choice Tree for Input from client to server.
   Do all Operations necessary for a Client disconnect here.
   **/
   private void spinDown(){
+    System.out.println("safely Ending Thread for "+uID);
     synchronized(ServerContainer.servState){
     ServerContainer.servState.currentUsers--;
     }
