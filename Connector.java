@@ -52,7 +52,7 @@ public class Connector extends Thread{
     }
   }
 /**
-Choice Tree for Input
+Choice Tree for Input from client to server.
 **/
   public ChatPacket process(ChatPacket input){
     ChatPacket c;
@@ -164,6 +164,7 @@ Choice Tree for Input
       }if(command.equals("exit")){
         spinDown=true;
         c = new ChatPacket("SafeToExit","Have a wonderful day");
+        return c;
       }
     }
     c = new ChatPacket("Message", "sorry didnt get that " + input +"\n"+usage);//bad Command
