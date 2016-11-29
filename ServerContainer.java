@@ -1,7 +1,9 @@
 import java.net.*;
 import java.io.*;
 import java.util.Hashtable;
-
+/**
+Main Class for Server, keeps all the shared data of the server and spins up all threads.
+**/
 public class ServerContainer{
   public static ServerState servState = new ServerState();
   public static Hashtable<Integer,Room> roomList = new Hashtable<Integer,Room>();
@@ -16,7 +18,10 @@ public class ServerContainer{
     int portNumber = Integer.parseInt(args[0]);
     startServer(portNumber);
   }
-
+/**
+Method to begin server at the given portNumber.
+Keeps Track of How Many users are currently on.
+**/
   public static void startServer(int portNumber){
       int userNumber=0;
       boolean listening = true;

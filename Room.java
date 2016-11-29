@@ -1,13 +1,19 @@
 import java.net.*;
 import java.io.*;
-
+/**
+Room
+param int gameID
+creates a Room dedicated to playing the game given in the arguments.
+ Handles things like keeping track of whose turn it is, who is playing,
+ And other things not specific to the game being played.
+**/
 public class Room{
   String[] players;
-  Integer[] playerID;
+  Integer[] playerID;//Id's of players
   Connector[] connections;
-  ChatPacket nextMessage;
-  int turnSwitch =0;
-  Integer turn = 0;
+  ChatPacket nextMessage;//Defines the chat packet that tells what is happening in the game
+  int turnSwitch =0;//whose turn it is in terms of player 0, 1.
+  Integer turn = 0;//whose turn it is in terms of player ID
   Integer state;
   Integer gameID;
   Game game;
@@ -25,23 +31,31 @@ public class Room{
     nextMessage = null;
     state = WAITING;
   }
+  /**
+  Opening Message
+  **/
   public String welcomeMessage(){
     String s = game.welcomeMessage();
     return s;
   }
+  /**
+  SendCommand
+  id: players ID
+  String: Messsage: Payload of instructions to send to game
+  **/
   public String SendCommand(Integer id, String Message) throws InvalidMoveException{
-    if(turn == playerID[0]){
+    if(turn == playerID[0]){//make sure its the correct turn
       if(id != playerID[0]){
         return "please wait your turn";
       }
       ChatPacket out = new ChatPacket("YourTurn", game.move(Message));
 
       nextMessage = out;
-      if(state != DONE){
+      if(state != DONE){//check if game was won
         turnSwitch = 1;
         turn = playerID[turnSwitch];
       }
-      return "";
+      return "";//probably options on what to send here.
     }
     if(turn == playerID[1]){
       if(id != playerID[1]){
@@ -58,10 +72,20 @@ public class Room{
     return "wut";
 
   }
+  /**
+  Send Ending Message from game.
+  **/
   public String finish(){
     String s = game.finish();
     return s;
   }
+  /**
+  Add a player to the Room
+  String username
+  Integer User Id
+  Connector Users Connection thread, to make sure it is still running.
+  Currently only supports 2 players
+  **/
   public boolean AddPlayer(String username, Integer id, Connector connector){
     if(playerID[0]==null){
       players[0] = username;
@@ -81,17 +105,32 @@ public class Room{
     System.err.println("someone tried to connect to a full lobby");
     return false;
   }
-
+  /**
+  Use this to get status updates from game
+  **/
   public ChatPacket getNextMessage(){
     ChatPacket n;
     n =  nextMessage;
+    if(BothConnected()){//Test that both players are connected
+      state=DONE;
+      if(connections[0].spinDown){//Whoever is still in the lobby wins.
+        turnSwitch=1;
+      }
+      if(connections[1].spinDown){
+        turnSwitch=0;
+      }
+      return new ChatPacket("FinishGame","A Player disconnected");
+    }
     if(n == null){
-      n = new ChatPacket("KeepAlive");
+      n = new ChatPacket("KeepAlive");//If no move was made, just do keepAlive
     }else{
       nextMessage=null;
     }
     return n;
   }
+  /**
+  Fast access to turn change
+  **/
   public void changeTurnSwitch(){
     if (turnSwitch==0){
       turnSwitch=1;
@@ -99,6 +138,9 @@ public class Room{
       turnSwitch=0;
     }
   }
+  /**
+  Internal Method to create a game from a class based on the given gameID.
+  **/
   public Game getGame(int gameID){
     if(gameID == 0){
       return new Game(this);
@@ -106,5 +148,8 @@ public class Room{
       return new TicTacToe(this);
     }
     return new Game(this);
+  }
+  private Boolean BothConnected(){
+    return connections[0].spinDown||connections[1].spinDown;
   }
 }

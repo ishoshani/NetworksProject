@@ -2,47 +2,68 @@ import java.io.*;
 import java.net.*;
 import java.util.Hashtable;
 import java.util.Set;
-
+/**
+Thread that interacts directly with the Client, handling messages from the socket.
+**/
 public class Connector extends Thread{
   Socket client;
   String username;
-  Integer CurrentGameID;
+  Integer CurrentGameKey;
   Room CurrentGame;
   Integer uID;
+  Boolean spinDown=false;
+  final String usage=
+  "The Following Commands are avaialable\n"+
+  "quickplay [gameID], 0 for conversation, 1 for TicTacToe\n"+
+  "PrivateLobby [password] [gameID], 0 for conversation, 1 for TicTacToe\n"+
+  "username [newName]\n"+
+  "hello\n"+
+  "status\n"+
+  "exit\n";
   public Connector(Socket socket, Integer userNumber){
     super("Connection"+socket);
     username = "newUser"+userNumber;
     client = socket;
     uID = userNumber;
   }
-
+  /**
+  Main Loop of Server Thread
+  **/
   public void run(){
     try(
     ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
     ObjectInputStream in = new ObjectInputStream(client.getInputStream());
     ){
       ChatPacket inputPacket, outputPacket;
-      while ((inputPacket = ((ChatPacket)in.readObject())) != null) {
+      while ((inputPacket = ((ChatPacket)in.readObject())) != null) {//blocks on input unless connection is severed
         outputPacket=process(inputPacket);
         out.writeObject(outputPacket);
+        if(spinDown){//User is exiting, proceed with voluntary disconnect
+          spinDown();
+          break;
+        }
       }
     }catch(IOException e){
-      System.err.println("in Connector" + e);
+      spinDown=true;
+      spinDown();
+      System.err.println("the user"+uID+"at Socket"+client+ "Experienced Error "+ e);
     }catch(ClassNotFoundException e){
       System.err.println(e);
     }
   }
-
+/**
+Choice Tree for Input
+**/
   public ChatPacket process(ChatPacket input){
     ChatPacket c;
-    if(input.packetType.equals("Start")){
-      c = new ChatPacket("Message", "Welcome to IRC!");
+    if(input.packetType.equals("Start")){//Handle Handshake
+      c = new ChatPacket("Message", "Welcome to IRC!\n"+usage);
       return c;
     }
-    if(input.packetType.equals("KeepAlive")){
+    if(input.packetType.equals("KeepAlive")){//Handle Standard KeepAlive
       return new ChatPacket("KeepAlive");
     }
-    if(input.packetType.equals("WaitingForLobby")){
+    if(input.packetType.equals("WaitingForLobby")){//Handle Lobby Waiting KeepAlive
       if (CurrentGame.state==Room.PLAYING){
         c = new ChatPacket("LobbyBegin", uID.toString());
         return c;
@@ -51,10 +72,10 @@ public class Connector extends Thread{
       }
     }
 
-    if(input.packetType.equals("BeginPlay")){
+    if(input.packetType.equals("BeginPlay")){//Handle Ready For Game Message
       String output = CurrentGame.welcomeMessage();
       String type;
-      if(CurrentGame.turn == uID){
+      if(CurrentGame.turn == uID){//Do I get to start?
         type = "YourTurn";
       }
       else{
@@ -63,13 +84,13 @@ public class Connector extends Thread{
       c = new ChatPacket(type, output, input.gameID);
       return c;
     }
-    if(input.packetType.equals("WaitingForTurn")){
+    if(input.packetType.equals("WaitingForTurn")){//Handle KeepAlive while waiting on a turn
       if(CurrentGame.state==Room.DONE){
         return new ChatPacket("FinishGame",CurrentGame.finish());
       }
       return CurrentGame.getNextMessage();
     }
-    if(input.packetType.equals("Playing")){
+    if(input.packetType.equals("Playing")){//Handle Message for Game Moves.
       try{
         return new ChatPacket("OtherTurn", CurrentGame.SendCommand(uID, input.packetMessage), input.gameID);
       }catch (InvalidMoveException e){
@@ -78,16 +99,16 @@ public class Connector extends Thread{
     }
 
 
-    if(input.packetType.equals("Menu")){
+    if(input.packetType.equals("Menu")){//Handle Non-game related Commands
       String command = input.packetMessage;
-      if(command.matches("username (.*)")){
+      if(command.matches("username (.*)")){//Reset Username
         username=command.split(" ")[1];
         c = new ChatPacket("Message", "Username is now "+username);
         return c;
-      }if(command.equals("hello")){
+      }if(command.equals("hello")){//Echo UserName
         c = new ChatPacket("Message", "hello "+username);
         return c;
-      }if(command.matches("lobby(.*)")){
+      }if(command.matches("lobby(.*)")){//run PrivateLobby
         String[] cPieces= command.split(" ");
         if(cPieces.length!=3){
           return new ChatPacket("Message", "Usage: lobby [password] [game] 0 for Convo 1 for TicTacToe)");
@@ -109,7 +130,7 @@ public class Connector extends Thread{
             return c;
           }
         }
-      }if(command.matches("quickplay(.*)")){
+      }if(command.matches("quickplay(.*)")){//run Public MatchMaking
         int gamePick;
         try{
           gamePick = Integer.parseInt(command.split(" ")[1]);
@@ -135,16 +156,22 @@ public class Connector extends Thread{
           c = new ChatPacket("LobbyBegin", uID.toString());
           return c;
         }
-      }if(command.matches("status")){
+      }if(command.matches("status")){//get Server Status.
         synchronized(ServerContainer.servState){
           c = new ChatPacket("Message", "there are currently "+ServerContainer.servState.currentUsers+" users");
         }
         return c;
+      }if(command.equals("exit")){
+        spinDown=true;
+        c = new ChatPacket("SafeToExit","Have a wonderful day");
       }
     }
-    c = new ChatPacket("Message", "sorry didnt get that" + input);
+    c = new ChatPacket("Message", "sorry didnt get that " + input +"\n"+usage);//bad Command
     return c;
   }
+  /**
+  Find a game on the server with the given Game ID. use whatever comes up first.
+  **/
   public Integer findGame(int gameID){
     for(Integer k : ServerContainer.roomList.keySet()){
       if(ServerContainer.roomList.get(k).gameID==gameID){
@@ -155,13 +182,12 @@ public class Connector extends Thread{
     }
     return null;
   }
-  public void SendtoClient(ChatPacket outputPacket){
-    try(
-    ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
-    ){
-      out.writeObject(outputPacket);
-    }catch(IOException e){
-      System.err.println(e);
+  /**
+  Do all Operations necessary for a Client disconnect here.
+  **/
+  private void spinDown(){
+    synchronized(ServerContainer.servState){
+    ServerContainer.servState.currentUsers--;
     }
   }
 

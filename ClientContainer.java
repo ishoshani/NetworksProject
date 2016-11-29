@@ -1,19 +1,23 @@
 
 import java.io.*;
 import java.net.*;
-
+/**
+Handles connection to server and sending it messages. Block on waiting to Receive.
+**/
 public class ClientContainer{
-  static String state = "Menu";
+  static String state = "Menu";//Begin in menu state whenever opened
   static Integer gameID = 0;
+  static Boolean showKeepAlive = false;
   public static void main(String[] args) {
-    if(args.length != 2){
+    if(args.length != 3){
       System.err.println(
-      "Usage: needs two arguments, java ClientContainer <hostname> <portnumber>"
+      "Usage: needs three arguments, java ClientContainer <hostname> <portnumber> <showKeepAlive>"
       );
       System.exit(1);
     }
     String hostName = args[0];
     int portNumber = Integer.parseInt(args[1]);
+    showKeepAlive=Boolean.parseBoolean(args[2]);
     try(
     Socket echoSocket = new Socket(hostName,portNumber);
     ObjectOutputStream out = new ObjectOutputStream(echoSocket.getOutputStream());
@@ -21,15 +25,15 @@ public class ClientContainer{
 
     BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))
     ){
-      echoSocket.setSoTimeout(2000);
+      echoSocket.setSoTimeout(2000);//set timeout on server to 20 seconds. If no keepalive messages, throw error and kill connection
       String userInput;
-      out.writeObject(new ChatPacket("Start"));
+      out.writeObject(new ChatPacket("Start"));//Handshake and get usage
       out.flush();
       ChatPacket welcome = (ChatPacket)in.readObject();
       System.out.println(welcome);
-      while(!state.equals("Exit")){
-        if(state.equals("Menu")){
-          if(!stdin.ready()){
+      while(!state.equals("Exit")){//Main Control loop. If Exit state is reached, end loop.
+        if(state.equals("Menu")){//Take input from user to send to Server for menu ops
+          while(!stdin.ready()){//if no keyboard inputs, send keepalives
             out.writeObject(new ChatPacket("KeepAlive"));
             ChatPacket KA=(ChatPacket)in.readObject();
             if(KA==null){
@@ -40,25 +44,24 @@ public class ClientContainer{
           }
           if((userInput = stdin.readLine()) != null){
             out.writeObject(new ChatPacket(state, userInput));
-            ChatPacket message= (ChatPacket)in.readObject();
+            ChatPacket message= (ChatPacket)in.readObject();//blocks on call :(
             ClientProtocol.processProcedure(message);
           }
         }
-        if(state.equals("WaitingForLobby")){
-          System.out.println("got into Waiting Section");
-          out.writeObject(new ChatPacket(state));
+        if(state.equals("WaitingForLobby")){//continue waiting for lobby
+          out.writeObject(new ChatPacket(state));//send test to keepalive and also if room is full
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
         }
         if(state.equals("BeginPlay")){
-          out.writeObject(new ChatPacket(state, "ready"));
+          out.writeObject(new ChatPacket(state, "ready"));//send that client is ready to begin game once lobby is full
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
         }
-        if(state.equals("Playing")){
-          if(!stdin.ready()){
+        if(state.equals("Playing")){//send command to server for paly
+          while(!stdin.ready()){//while waiting for input, send keepAlives, so as to not block on user input.
             out.writeObject(new ChatPacket("KeepAlive","", gameID));
             out.flush();
             ChatPacket KA=(ChatPacket)in.readObject();
@@ -74,17 +77,19 @@ public class ClientContainer{
             ClientProtocol.processProcedure(message);
           }
         }
-        if(state.equals("WaitingForTurn")){
+        while(state.equals("WaitingForTurn")){//Do while Waiting for your turn
           if(stdin.ready()){
-            String trash = stdin.readLine();
+            String trash = stdin.readLine();//Throw away in input so that you have a fresh buffer when your turn arrives
             System.out.println("wait your turn, threw away "+ trash);
           }
-          out.writeObject(new ChatPacket(state));
+          out.writeObject(new ChatPacket(state));//send KeepAlive and check if my turn.
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);
           }
         }
+        System.out.println("Exiting from Client");
+        echoSocket.close();
     }catch (UnknownHostException e) {
       System.err.println("Don't know about host " + hostName);
       System.exit(1);
