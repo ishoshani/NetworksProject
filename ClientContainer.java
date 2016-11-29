@@ -56,7 +56,7 @@ public class ClientContainer{
           ClientProtocol.processProcedure(message);
         }
         if(state.equals("BeginPlay")){
-          out.writeObject(new ChatPacket(state, "ready"));//send that client is ready to begin game once room is full
+          out.writeObject(new ChatPacket(state, "ready",gameID));//send that client is ready to begin game once room is full
           out.flush();
           ChatPacket message= (ChatPacket)in.readObject();
           ClientProtocol.processProcedure(message);

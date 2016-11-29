@@ -38,6 +38,7 @@ public class ClientProtocol{
     }
     if(input.packetType.equals("FinishGame")){//handle endo of game
       ClientContainer.state="Menu";
+      ClientContainer.gameID=0;
       System.out.println(input.packetMessage);
       System.out.println("Game was finished. Returning to Menu");
       return;
