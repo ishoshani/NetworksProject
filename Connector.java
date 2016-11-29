@@ -61,12 +61,6 @@ Choice Tree for Input from client to server.
       return c;
     }
     else if(input.packetType.equals("KeepAlive")){//Handle Standard KeepAlive
-      if(CurrentGame!=null){
-          if(CurrentGame.state==Room.DONE){
-            CurrentGame=null;
-            return new ChatPacket("FinishGame","A Player disconnected");
-          }
-        }
     return new ChatPacket("KeepAlive");
   }
     else if(input.packetType.equals("WaitingForRoom")){//Handle Room Waiting KeepAlive
