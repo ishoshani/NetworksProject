@@ -115,13 +115,13 @@ Choice Tree for Input from client to server.
             CurrentGame = ServerContainer.privateRooms.get(pass);
             CurrentGame.AddPlayer(username, uID, this);
             CurrentGame.state=Room.PLAYING;
-            c = new ChatPacket("RoomBegin", uID.toString());
+            c = new ChatPacket("RoomBegin", pass);
             return c;
           }else{
             ServerContainer.privateRooms.put(pass,new Room(gamePick));
             CurrentGame = ServerContainer.privateRooms.get(pass);
             CurrentGame.AddPlayer(username,uID, this);
-            c = new ChatPacket("NoRooms",uID.toString());
+            c = new ChatPacket("NoRooms",pass);
             return c;
           }
         }

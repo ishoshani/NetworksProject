@@ -41,7 +41,7 @@ public class ClientContainer{
       out.writeObject(new ChatPacket("Start"));//Handshake and get usage
       out.flush();
       ChatPacket welcome = (ChatPacket)in.readObject();
-      System.out.println(welcome);
+      ClientProtocol.processProcedure(welcome);
       while(!state.equals("Exit")){//Main Control loop. If Exit state is reached, end loop.
         if(state.equals("Menu")){//Take input from user to send to Server for menu ops
           while(!stdin.ready()){//if no keyboard inputs, send keepalives
@@ -55,9 +55,11 @@ public class ClientContainer{
           }
           if((userInput = stdin.readLine()) != null){
             if(validateMenu(userInput)){
-            out.writeObject(new ChatPacket(state, userInput));
-            ChatPacket message= (ChatPacket)in.readObject();//blocks on call :(
-            ClientProtocol.processProcedure(message);
+              out.writeObject(new ChatPacket(state, userInput));
+              ChatPacket message= (ChatPacket)in.readObject();//blocks on call :(
+              ClientProtocol.processProcedure(message);
+            }else{
+              System.out.println(usage);
             }
           }
         }
@@ -123,17 +125,20 @@ public class ClientContainer{
         }
       }else if(input.matches("quickplay(.*)")){
         if(input.split(" ").length==2){
-          if(Arrays.asList(listOfGame).contains(input.split(" ")[1])){
-          valid = true;
-        }
-        }
-      }
-      else if(input.matches("lobby(.*)")){
-        if(input.split(" ").length==3){
-          if(Arrays.asList(listOfGame).contains(input.split(" ")[2])){
+          if(Arrays.asList(listOfGame).contains(Integer.parseInt(input.split(" ")[1]))){
             valid = true;
-          }
-        }
+          }else{
+          System.out.println("not a valid game");}
+        }else{
+        System.out.println("wrong num of arguments");}
+      }else if(input.matches("room(.*)")){
+        if(input.split(" ").length==3){
+          if(Arrays.asList(listOfGame).contains(Integer.parseInt(input.split(" ")[2]))){
+            valid = true;
+          }else{
+          System.out.println("not a valid game");}
+        }else{
+        System.out.println("wrong num of arguments");}
       }
       else if((input.matches("hello"))||(input.matches("status"))||(input.matches("exit"))){
         valid = true;
