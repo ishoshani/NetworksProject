@@ -1,4 +1,6 @@
-
+/**
+A base class for a game, with a simple example of an orderly conversation with a start, turns, and an endstate.
+**/
 public class Game{
   Room myRoom;
   public Game(Room myRoom){

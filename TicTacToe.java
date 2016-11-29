@@ -1,4 +1,6 @@
-
+/**
+A slightly more complicated Example Class. Extends Game to Show how a the methods are enough to run these simple games.
+**/
 public class TicTacToe extends Game{
   private int[][] board;
   public TicTacToe(Room myRoom){

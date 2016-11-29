@@ -116,6 +116,9 @@ public class ClientContainer{
       System.out.println("Exiting Client");
     }
   }
+  /**
+  Validate Menu Options. We only do menu options because of the two places where we have user input, only Menu is not game specific.
+  **/
   public static boolean validateMenu(String input){
     boolean valid = false;
     if(state == "Menu"){
