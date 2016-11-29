@@ -9,7 +9,7 @@ public class ClientProtocol{
     }
     if(input.packetType.equals("NoLobbies")){
       System.out.println("NoLobby : waiting for lobby with name of"+input.packetMessage);
-      ClientContainer.state="Waiting";
+      ClientContainer.state="WaitingForLobby";
       return;
     }
     if(input.packetType.equals("LobbyBegin")){
@@ -42,6 +42,7 @@ public class ClientProtocol{
     }
     if(input.packetType.equals("Error")){
       System.out.println(input);
+      return;
     }
     if(input.packetType.equals("KeepAlive")){
       try{

@@ -71,9 +71,9 @@ public class Connector extends Thread{
     }
     if(input.packetType.equals("Playing")){
       try{
-        return new ChatPacket("otherTurn", CurrentGame.SendCommand(uID, input.packetMessage), input.gameID);
+        return new ChatPacket("OtherTurn", CurrentGame.SendCommand(uID, input.packetMessage), input.gameID);
       }catch (InvalidMoveException e){
-        return new ChatPacket("yourTurn", e.toString(), input.gameID);
+        return new ChatPacket("YourTurn", e.toString(), input.gameID);
       }
     }
 

@@ -21,7 +21,7 @@ public class ClientContainer{
 
     BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))
     ){
-      echoSocket.setSoTimeout(250);
+      echoSocket.setSoTimeout(2000);
       String userInput;
       out.writeObject(new ChatPacket("Start"));
       out.flush();
