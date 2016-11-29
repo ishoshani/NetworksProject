@@ -111,7 +111,7 @@ public class Room{
   public ChatPacket getNextMessage(){
     ChatPacket n;
     n =  nextMessage;
-    if(BothConnected()){//Test that both players are connected
+    if(bothconnected()){//Test that both players are connected
       state=DONE;
       if(connections[0].spinDown){//Whoever is still in the room wins.
         turnSwitch=1;
@@ -149,7 +149,7 @@ public class Room{
     }
     return new Game(this);
   }
-  private Boolean BothConnected(){
+  private Boolean bothConnected(){
     return connections[0].spinDown||connections[1].spinDown;
   }
 }
