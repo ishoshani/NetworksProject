@@ -42,6 +42,7 @@ public class ClientContainer{
       out.flush();
       ChatPacket welcome = (ChatPacket)in.readObject();
       ClientProtocol.processProcedure(welcome);
+	System.out.println(usage);
       while(!state.equals("Exit")){//Main Control loop. If Exit state is reached, end loop.
         if(state.equals("Menu")){//Take input from user to send to Server for menu ops
           while(!stdin.ready()){//if no keyboard inputs, send keepalives
