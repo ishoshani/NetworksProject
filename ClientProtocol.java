@@ -30,7 +30,6 @@ public class ClientProtocol{
     }
     if(input.packetType.equals("RoomBegin")){//let server know that client is ready to play
       System.out.println("got Into game");
-      ClientContainer.gameID=Integer.parseInt(input.packetMessage);
       ClientContainer.state="BeginPlay";
       return;
     }
