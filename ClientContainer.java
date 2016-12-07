@@ -13,7 +13,7 @@ public class ClientContainer{
   final static String usage=
   "The Following Commands are avaialable\n"+
   "quickplay [gameID], 0 for conversation, 1 for TicTacToe\n"+
-  "PrivateRoom [password] [gameID], 0 for conversation, 1 for TicTacToe\n"+
+  "room [password] [gameID], 0 for conversation, 1 for TicTacToe\n"+
   "username [newName]\n"+
   "hello\n"+
   "status\n"+
