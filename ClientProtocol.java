@@ -16,6 +16,7 @@ public class ClientProtocol{
       }
       System.out.println(Arrays.asList(listOfGame));
       ClientContainer.listOfGame =listOfGame;
+      System.out.println(ClientContainer.usage);
       return;
     }
     if(input.packetType.equals("Message")){//handle generic message
